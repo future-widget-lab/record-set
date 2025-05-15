@@ -49,7 +49,7 @@ describe('Unit | Heler | Collection', () => {
     expect(col.at(0)).toEqual(data[0]);
     expect(col.at(3)).toEqual(data[3]);
     expect(col.at(4)).toBeNull();
-    expect(col.at(-1)).toBeNull;
+    expect(col.at(-1)).toBeNull();
   });
 
   it('should return first and last element or null using head and tail', () => {
