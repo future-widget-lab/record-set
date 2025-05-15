@@ -16,6 +16,9 @@ devDependencies:
   '@tsconfig/recommended':
     specifier: ^1.0.8
     version: 1.0.8
+  '@types/jest':
+    specifier: ^29.5.14
+    version: 29.5.14
   dts-cli:
     specifier: ^2.0.5
     version: 2.0.5(@babel/plugin-syntax-flow@7.27.1)(@babel/plugin-transform-react-jsx@7.27.1)(@types/node@22.15.18)
