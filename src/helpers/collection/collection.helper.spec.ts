@@ -49,7 +49,7 @@ describe('Unit | Heler | Collection', () => {
     expect(col.at(0)).toEqual(data[0]);
     expect(col.at(3)).toEqual(data[3]);
     expect(col.at(4)).toBeNull();
-    expect(col.at(-1)).toBeNull();
+    expect(col.at(-1)).toEqual(data[data.length - 1]);
   });
 
   it('should return first and last element or null using head and tail', () => {
@@ -216,8 +216,6 @@ describe('Unit | Heler | Collection', () => {
     const col = Collection.from(data);
 
     const expected = [4, 3, 2, 1];
-
-    console.info(col.reverse().pluck('id'));
 
     const actual = col.reverse().pluck('id');
 
