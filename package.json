@@ -1,11 +1,16 @@
 {
-  "name": "record-collection",
+  "name": "@future-widget-lab/record-collection",
   "version": "0.1.0",
+  "description": "A lightweight helper class for managing and querying in-memory record collections using MongoDB-like filters with `sift`.",
   "license": "MIT",
   "author": "Carlos Lobo",
   "main": "dist/index.js",
   "module": "dist/record-collection.esm.js",
   "typings": "dist/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/future-widget-lab/record-collection.git"
+  },
   "files": [
     "dist",
     "src"
@@ -33,7 +38,6 @@
   "jest": {
     "testEnvironment": "node"
   },
-  "peerDependencies": {},
   "engines": {
     "node": ">=12"
   },
@@ -46,5 +50,17 @@
       "path": "dist/record-collection.esm.js",
       "limit": "10 KB"
     }
-  ]
+  ],
+  "devDependencies": {
+    "@size-limit/preset-small-lib": "^11.2.0",
+    "@tsconfig/recommended": "^1.0.8",
+    "dts-cli": "^2.0.5",
+    "husky": "^9.1.7",
+    "size-limit": "^11.2.0",
+    "tslib": "^2.8.1",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "sift": "^17.1.3"
+  }
 }
