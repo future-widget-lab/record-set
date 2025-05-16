@@ -28,13 +28,13 @@ export type CollectionApi<TRecord> = {
    * @description
    * Use this method to get the first record in the collection, or null if the collection is empty.
    */
-  head: () => TRecord | null;
+  first: () => TRecord | null;
   /**
    * @method
    * @description
    * Use this method to get the last record in the collection, or null if the collection is empty.
    */
-  tail: () => TRecord | null;
+  last: () => TRecord | null;
   /**
    * @method
    * @description

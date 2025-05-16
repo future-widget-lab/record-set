@@ -21,8 +21,8 @@ export class Collection<TRecord> implements CollectionApi<TRecord> {
     this.records = records || [];
     this.toArray = this.toArray.bind(this);
     this.at = this.at.bind(this);
-    this.head = this.head.bind(this);
-    this.tail = this.tail.bind(this);
+    this.first = this.first.bind(this);
+    this.last = this.last.bind(this);
     this.length = this.length.bind(this);
     this.isEmpty = this.isEmpty.bind(this);
     this.find = this.find.bind(this);
@@ -84,11 +84,11 @@ export class Collection<TRecord> implements CollectionApi<TRecord> {
    * @example
    * const col = Collection.of([{ id: 1 }, { id: 2 }]);
    *
-   * col.head(); // { id: 1 }
+   * col.first(); // { id: 1 }
    *
-   * Collection.of([]).head(); // null
+   * Collection.of([]).first(); // null
    */
-  public head(): TRecord | null {
+  public first(): TRecord | null {
     return this.records[0] ?? null;
   }
 
@@ -100,11 +100,11 @@ export class Collection<TRecord> implements CollectionApi<TRecord> {
    * @example
    * const col = Collection.of([{ id: 1 }, { id: 2 }]);
    *
-   * col.tail(); // { id: 2 }
+   * col.last(); // { id: 2 }
    *
-   * Collection.of([]).tail(); // null
+   * Collection.of([]).last(); // null
    */
-  public tail(): TRecord | null {
+  public last(): TRecord | null {
     return this.records[this.records.length - 1] ?? null;
   }
 
@@ -196,7 +196,7 @@ export class Collection<TRecord> implements CollectionApi<TRecord> {
    */
   public findOne(query?: Query<TRecord>): TRecord | null {
     if (!query) {
-      return this.head();
+      return this.first();
     }
 
     return this.records.find(sift(query)) ?? null;

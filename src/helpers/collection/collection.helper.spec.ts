@@ -54,19 +54,19 @@ describe('Unit | Heler | Collection', () => {
     expect(col.at(-1)).toEqual(data[data.length - 1]);
   });
 
-  it('should return first and last element or null using head and tail', () => {
+  it('should return first and last element or null using first and last', () => {
     const col = Collection.of(data);
     const expectedHead = data[0];
-    const actualHead = col.head();
+    const actualHead = col.first();
     expect(actualHead).toEqual(expectedHead);
 
     const expectedTail = data[data.length - 1];
-    const actualTail = col.tail();
+    const actualTail = col.last();
     expect(actualTail).toEqual(expectedTail);
 
     const empty = Collection.of([]);
-    expect(empty.head()).toBeNull();
-    expect(empty.tail()).toBeNull();
+    expect(empty.first()).toBeNull();
+    expect(empty.last()).toBeNull();
   });
 
   it('should return correct length and emptiness using length and isEmpty', () => {
@@ -100,7 +100,7 @@ describe('Unit | Heler | Collection', () => {
     expect(actual).toEqual(expected);
   });
 
-  it('should return head when no query is provided using findOne', () => {
+  it('should return first when no query is provided using findOne', () => {
     const col = Collection.of(data);
 
     const expected = data[0];
