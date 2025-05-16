@@ -160,6 +160,26 @@ describe('Unit | Heler | Collection', () => {
     expect(actual).toEqual(expected);
   });
 
+  it('should reduce records correctly using reduce', () => {
+    const col = Collection.of(data);
+
+    const totalAge = col.reduce((acc, person) => {
+      return acc + person.age;
+    }, 0);
+
+    expect(totalAge).toEqual(130);
+  });
+
+  it('should flatMap nested arrays correctly using flatMap', () => {
+    const nested = Collection.of<Array<number>>([[1, 2], [3, 4]]);
+
+    const flattened = nested.flatMap((arr) => {
+      return arr;
+    });
+
+    expect(flattened.toArray()).toEqual([1, 2, 3, 4]);
+  });
+
   it('should extract field values correctly using pluck', () => {
     const col = Collection.of(data);
 
@@ -168,6 +188,45 @@ describe('Unit | Heler | Collection', () => {
     const actual = col.pluck('age');
 
     expect(actual).toEqual(expected);
+  });
+
+  it('should group records correctly using groupBy', () => {
+    const col = Collection.of(data);
+    const grouped = col.groupBy((p) => {
+      return p.name;
+    });
+
+    expect(grouped.get('Bob')?.toArray()).toEqual([
+      { id: 2, name: 'Bob', age: 25 },
+      { id: 4, name: 'Bob', age: 40 },
+    ]);
+    expect(grouped.get('Alice')?.toArray()).toEqual([
+      { id: 1, name: 'Alice', age: 30 },
+    ]);
+  });
+
+  it('should reverse records correctly using reverse', () => {
+    const col = Collection.of(data);
+
+    const expected = [4, 3, 2, 1];
+
+    const actual = col.reverse().pluck('id');
+
+    expect(actual).toEqual(expected);
+  });
+
+  it('should be iterable using for...of', () => {
+    const col = Collection.of(data);
+
+    const ids: number[] = [];
+
+    const expected = [1, 2, 3, 4];
+
+    for (const item of col) {
+      ids.push(item.id);
+    }
+
+    expect(ids).toEqual(expected);
   });
 
   it('should select specified keys correctly using pick', () => {
@@ -259,29 +318,5 @@ describe('Unit | Heler | Collection', () => {
       { name: 'Bob', age: 30 },
       { name: 'Bob', age: 25 },
     ]);
-  });
-
-  it('should reverse records correctly using reverse', () => {
-    const col = Collection.of(data);
-
-    const expected = [4, 3, 2, 1];
-
-    const actual = col.reverse().pluck('id');
-
-    expect(actual).toEqual(expected);
-  });
-
-  it('should be iterable using for...of', () => {
-    const col = Collection.of(data);
-
-    const ids: number[] = [];
-
-    const expected = [1, 2, 3, 4];
-
-    for (const item of col) {
-      ids.push(item.id);
-    }
-
-    expect(ids).toEqual(expected);
   });
 });

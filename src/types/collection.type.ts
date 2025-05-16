@@ -14,7 +14,7 @@ export type CollectionApi<TRecord> = {
   /**
    * @method
    * @description
-   * Use this method to get a shallow-copied array of all records in the store.
+   * Use this method to get a shallow-copied array of all records in the collection.
    */
   toArray: () => Array<TRecord>;
   /**
@@ -26,25 +26,25 @@ export type CollectionApi<TRecord> = {
   /**
    * @method
    * @description
-   * Use this method to get the first record in the store, or null if the store is empty.
+   * Use this method to get the first record in the collection, or null if the collection is empty.
    */
   head: () => TRecord | null;
   /**
    * @method
    * @description
-   * Use this method to get the last record in the store, or null if the store is empty.
+   * Use this method to get the last record in the collection, or null if the collection is empty.
    */
   tail: () => TRecord | null;
   /**
    * @method
    * @description
-   * Use this method to get the number of records in the store.
+   * Use this method to get the number of records in the collection.
    */
   length: () => number;
   /**
    * @method
    * @description
-   * Use this method to determine whether the store contains any records.
+   * Use this method to determine whether the collection contains any records.
    */
   isEmpty: () => boolean;
   /**
@@ -86,7 +86,7 @@ export type CollectionApi<TRecord> = {
   /**
    * @method
    * @description
-   * Use this method to transform all records in the store and return a new Collection of the transformed records.
+   * Use this method to transform all records in the collection and return a new Collection of the transformed records.
    */
   map: <TransformedRecord>(
     fn: (item: TRecord) => TransformedRecord
@@ -94,7 +94,26 @@ export type CollectionApi<TRecord> = {
   /**
    * @method
    * @description
-   * Use this method to extract an array of a single field's values from all records in the store.
+   * Use this method to map each record to zero or more records, then flatten the results into a single new Collection.
+   *
+   * This is handy for extracting nested arrays or expanding items.
+   */
+  flatMap: <TMappedRecord>(
+    fn: (record: TRecord) => Array<TMappedRecord>
+  ) => CollectionApi<TMappedRecord>;
+  /**
+   * @method
+   * @description
+   * Use this method to reduce the collection to a single accumulated value.
+   */
+  reduce<TAccumulator>(
+    fn: (accumulator: TAccumulator, record: TRecord) => TAccumulator,
+    initialValue: TAccumulator
+  ): TAccumulator;
+  /**
+   * @method
+   * @description
+   * Use this method to extract an array of a single field's values from all records in the collection.
    */
   pluck: <TKey extends keyof TRecord>(key: TKey) => Array<TRecord[TKey]>;
   /**
@@ -124,7 +143,7 @@ export type CollectionApi<TRecord> = {
   /**
    * @method
    * @description
-   * Use this method reverse the order of the records.
+   * Use this method to sort the records by key(s) using lodash orderBy.
    */
   reverse: () => CollectionApi<TRecord>;
 };
