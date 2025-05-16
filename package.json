@@ -44,17 +44,19 @@
   "size-limit": [
     {
       "path": "dist/record-collection.cjs.production.min.js",
-      "limit": "10 KB"
+      "limit": "10.13 KB"
     },
     {
       "path": "dist/record-collection.esm.js",
-      "limit": "10 KB"
+      "limit": "10.13 KB"
     }
   ],
   "devDependencies": {
     "@size-limit/preset-small-lib": "^11.2.0",
     "@tsconfig/recommended": "^1.0.8",
     "@types/jest": "^29.5.14",
+    "@types/lodash.orderby": "^4.6.9",
+    "@types/lodash.uniqby": "^4.7.9",
     "dts-cli": "^2.0.5",
     "husky": "^9.1.7",
     "size-limit": "^11.2.0",
@@ -62,6 +64,8 @@
     "typescript": "^5.8.3"
   },
   "dependencies": {
+    "lodash.orderby": "^4.6.0",
+    "lodash.uniqby": "^4.7.0",
     "sift": "^17.1.3"
   }
 }

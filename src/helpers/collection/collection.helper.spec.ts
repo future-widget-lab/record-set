@@ -15,7 +15,7 @@ const data: Array<Person> = [
 
 describe('Unit | Heler | Collection', () => {
   it('should create an empty collection when undefined is passed', () => {
-    const col = Collection.from(undefined as any);
+    const col = Collection.of(undefined as any);
     const expectedLength = 0;
     const actualLength = col.length();
 
@@ -30,11 +30,13 @@ describe('Unit | Heler | Collection', () => {
   it('should throw an error for non-array input in constructor', () => {
     const construct = () => new (Collection as any)(123);
 
-    expect(construct).toThrow(/Collection records must be an array/);
+    expect(construct).toThrow(
+      /A collection records must be an array. You are seeing this error because a type of \"number\" was passed to the collection constructor./i
+    );
   });
 
   it('should return a shallow copy using toArray', () => {
-    const col = Collection.from(data);
+    const col = Collection.of(data);
     const arr1 = col.toArray();
     const arr2 = col.toArray();
 
@@ -44,7 +46,7 @@ describe('Unit | Heler | Collection', () => {
   });
 
   it('should return correct element or null using at', () => {
-    const col = Collection.from(data);
+    const col = Collection.of(data);
 
     expect(col.at(0)).toEqual(data[0]);
     expect(col.at(3)).toEqual(data[3]);
@@ -53,7 +55,7 @@ describe('Unit | Heler | Collection', () => {
   });
 
   it('should return first and last element or null using head and tail', () => {
-    const col = Collection.from(data);
+    const col = Collection.of(data);
     const expectedHead = data[0];
     const actualHead = col.head();
     expect(actualHead).toEqual(expectedHead);
@@ -62,23 +64,23 @@ describe('Unit | Heler | Collection', () => {
     const actualTail = col.tail();
     expect(actualTail).toEqual(expectedTail);
 
-    const empty = Collection.from([]);
+    const empty = Collection.of([]);
     expect(empty.head()).toBeNull();
     expect(empty.tail()).toBeNull();
   });
 
   it('should return correct length and emptiness using length and isEmpty', () => {
-    const col = Collection.from(data);
+    const col = Collection.of(data);
 
     expect(col.length()).toEqual(data.length);
 
     expect(col.isEmpty()).toBeFalsy();
 
-    expect(Collection.from([]).isEmpty()).toBeTruthy();
+    expect(Collection.of([]).isEmpty()).toBeTruthy();
   });
 
   it('should return same instance when no query is provided using find', () => {
-    const col = Collection.from(data);
+    const col = Collection.of(data);
 
     const actual = col.find();
 
@@ -86,7 +88,7 @@ describe('Unit | Heler | Collection', () => {
   });
 
   it('should filter records correctly using find', () => {
-    const col = Collection.from(data);
+    const col = Collection.of(data);
 
     const expected = [
       { id: 2, name: 'Bob', age: 25 },
@@ -99,7 +101,7 @@ describe('Unit | Heler | Collection', () => {
   });
 
   it('should return head when no query is provided using findOne', () => {
-    const col = Collection.from(data);
+    const col = Collection.of(data);
 
     const expected = data[0];
     const actual = col.findOne();
@@ -108,7 +110,7 @@ describe('Unit | Heler | Collection', () => {
   });
 
   it('should return correct record or null using findOne', () => {
-    const col = Collection.from(data);
+    const col = Collection.of(data);
     const expectedMatch = data[1];
     const actualMatch = col.findOne({ name: 'Bob' });
     expect(actualMatch).toEqual(expectedMatch);
@@ -118,7 +120,7 @@ describe('Unit | Heler | Collection', () => {
   });
 
   it('should return correct counts using count', () => {
-    const col = Collection.from(data);
+    const col = Collection.of(data);
 
     const expectedTotal = data.length;
     expect(col.count()).toEqual(expectedTotal);
@@ -128,16 +130,16 @@ describe('Unit | Heler | Collection', () => {
   });
 
   it('should return correct existence using exists', () => {
-    const col = Collection.from(data);
+    const col = Collection.of(data);
 
     expect(col.exists()).toBeTruthy();
-    expect(Collection.from([]).exists()).toBeFalsy();
+    expect(Collection.of([]).exists()).toBeFalsy();
     expect(col.exists({ age: { $gt: 30 } })).toBeTruthy();
     expect(col.exists({ age: { $gt: 100 } })).toBeFalsy();
   });
 
   it('should return distinct values correctly using distinct', () => {
-    const col = Collection.from(data);
+    const col = Collection.of(data);
 
     const expectedNames = ['Alice', 'Bob', 'Eve'].sort();
     const actualNames = col.distinct('name').sort();
@@ -149,7 +151,7 @@ describe('Unit | Heler | Collection', () => {
   });
 
   it('should transform items correctly using map', () => {
-    const col = Collection.from(data);
+    const col = Collection.of(data);
 
     const expected = ['Alice', 'Bob', 'Eve', 'Bob'];
 
@@ -159,7 +161,7 @@ describe('Unit | Heler | Collection', () => {
   });
 
   it('should extract field values correctly using pluck', () => {
-    const col = Collection.from(data);
+    const col = Collection.of(data);
 
     const expected = [30, 25, 35, 40];
 
@@ -169,7 +171,7 @@ describe('Unit | Heler | Collection', () => {
   });
 
   it('should select specified keys correctly using pick', () => {
-    const col = Collection.from(data);
+    const col = Collection.of(data);
 
     const expected = [
       { id: 1, name: 'Alice' },
@@ -184,7 +186,7 @@ describe('Unit | Heler | Collection', () => {
   });
 
   it('should remove specified keys correctly using omit', () => {
-    const col = Collection.from(data);
+    const col = Collection.of(data);
 
     const expected = [
       { id: 1, name: 'Alice' },
@@ -199,7 +201,7 @@ describe('Unit | Heler | Collection', () => {
   });
 
   it('should sort records correctly using sort', () => {
-    const col = Collection.from(data);
+    const col = Collection.of(data);
 
     const expected = [25, 30, 35, 40];
 
@@ -212,8 +214,55 @@ describe('Unit | Heler | Collection', () => {
     expect(actual).toEqual(expected);
   });
 
+  it('should sort ascending by a single key (string)', () => {
+    const col = Collection.of(data);
+
+    const actual = col.sortBy('age').pluck('age');
+
+    expect(actual).toEqual([25, 30, 35, 40]);
+  });
+
+  it('should sort descending by a single key (string)', () => {
+    const col = Collection.of(data);
+
+    const actual = col.sortBy('age', 'desc').pluck('age');
+
+    expect(actual).toEqual([40, 35, 30, 25]);
+  });
+
+  it('should sort ascending by multiple keys (array)', () => {
+    const multiData = Collection.of([
+      { name: 'Bob', age: 30 },
+      { name: 'Bob', age: 25 },
+      { name: 'Alice', age: 35 },
+    ]);
+
+    const actual = multiData.sortBy(['name', 'age'], ['asc', 'asc']).toArray();
+
+    expect(actual).toEqual([
+      { name: 'Alice', age: 35 },
+      { name: 'Bob', age: 25 },
+      { name: 'Bob', age: 30 },
+    ]);
+  });
+
+  it('should sort by multiple keys with different orders', () => {
+    const multiData = Collection.of([
+      { name: 'Bob', age: 30 },
+      { name: 'Bob', age: 25 },
+      { name: 'Alice', age: 35 },
+    ]);
+    const actual = multiData.sortBy(['name', 'age'], ['asc', 'desc']).toArray();
+
+    expect(actual).toEqual([
+      { name: 'Alice', age: 35 },
+      { name: 'Bob', age: 30 },
+      { name: 'Bob', age: 25 },
+    ]);
+  });
+
   it('should reverse records correctly using reverse', () => {
-    const col = Collection.from(data);
+    const col = Collection.of(data);
 
     const expected = [4, 3, 2, 1];
 
@@ -223,7 +272,7 @@ describe('Unit | Heler | Collection', () => {
   });
 
   it('should be iterable using for...of', () => {
-    const col = Collection.from(data);
+    const col = Collection.of(data);
 
     const ids: number[] = [];
 
