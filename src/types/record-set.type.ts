@@ -155,6 +155,21 @@ export type RecordSetApi<TRecord> = {
   /**
    * @method
    * @description
+   * Use this method to project each record to include or exclude fields, returning a new record set of records with only those keys:
+   * - String: `'a b -c +d'`.
+   * - Array of strings: `['a', '-b']`.
+   * - Object notation: `{ a: 1, b: 1 }` or `{ c: 0 }`.
+   *
+   * Inclusive if any field is positively specified (no `-` or `0`).
+   *
+   * Exclusive if only negatives (`-`) or zeros (`0`).
+   */
+  select: (
+    spec: string | Array<string> | Record<string, 0 | 1>
+  ) => RecordSetApi<Partial<TRecord>>;
+  /**
+   * @method
+   * @description
    * Use this method to sort the records with the provided compare function.
    */
   sort: (

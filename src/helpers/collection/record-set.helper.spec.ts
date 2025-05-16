@@ -351,6 +351,82 @@ describe('Unit | Heler | RecordSet', () => {
     expect(actual).toEqual(expected);
   });
 
+  it('should include specified fields via string', () => {
+    type User = { id: number; name: string; age: number; flag?: boolean };
+
+    const data: Array<User> = [
+      { id: 1, name: 'A', age: 10, flag: true },
+      { id: 2, name: 'B', age: 20, flag: false },
+    ];
+
+    const actual = RecordSet.of(data).select('id name').toArray();
+    expect(actual).toEqual([
+      { id: 1, name: 'A' },
+      { id: 2, name: 'B' },
+    ]);
+  });
+
+  it('should exclude specified fields via string', () => {
+    type User = { id: number; name: string; age: number; flag?: boolean };
+
+    const data: Array<User> = [
+      { id: 1, name: 'A', age: 10, flag: true },
+      { id: 2, name: 'B', age: 20, flag: false },
+    ];
+
+    const actual = RecordSet.of(data).select('-age -flag').toArray();
+
+    expect(actual).toEqual([
+      { id: 1, name: 'A' },
+      { id: 2, name: 'B' },
+    ]);
+  });
+
+  it('should include fields via object notation', () => {
+    type User = { id: number; name: string; age: number; flag?: boolean };
+
+    const data: Array<User> = [
+      { id: 1, name: 'A', age: 10, flag: true },
+      { id: 2, name: 'B', age: 20, flag: false },
+    ];
+
+    const actual = RecordSet.of(data).select({ id: 1, age: 1 }).toArray();
+
+    expect(actual).toEqual([
+      { id: 1, age: 10 },
+      { id: 2, age: 20 },
+    ]);
+  });
+
+  it('should exclude fields via object notation', () => {
+    type User = { id: number; name: string; age: number; flag?: boolean };
+
+    const data: Array<User> = [
+      { id: 1, name: 'A', age: 10, flag: true },
+      { id: 2, name: 'B', age: 20, flag: false },
+    ];
+
+    const actual = RecordSet.of(data).select({ name: 0, flag: 0 }).toArray();
+
+    expect(actual).toEqual([
+      { id: 1, age: 10 },
+      { id: 2, age: 20 },
+    ]);
+  });
+
+  it('should treat "+" prefix as include', () => {
+    type User = { id: number; name: string; age: number; flag?: boolean };
+
+    const data: Array<User> = [
+      { id: 1, name: 'A', age: 10, flag: true },
+      { id: 2, name: 'B', age: 20, flag: false },
+    ];
+
+    const actual = RecordSet.of(data).select('+flag').toArray();
+
+    expect(actual).toEqual([{ flag: true }, { flag: false }]);
+  });
+
   it('should sort records correctly using sort', () => {
     const records = RecordSet.of(data);
 

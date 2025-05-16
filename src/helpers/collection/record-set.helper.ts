@@ -39,6 +39,7 @@ export class RecordSet<TRecord> implements RecordSetApi<TRecord> {
     this.pluck = this.pluck.bind(this);
     this.pick = this.pick.bind(this);
     this.omit = this.omit.bind(this);
+    this.select = this.select.bind(this);
     this.sort = this.sort.bind(this);
     this.sortBy = this.sortBy.bind(this);
     this.groupBy = this.groupBy.bind(this);
@@ -578,6 +579,74 @@ export class RecordSet<TRecord> implements RecordSetApi<TRecord> {
     }
 
     return RecordSet.of(omitted);
+  }
+
+  /**
+   * @method
+   * @description
+   * Use this method to project each record to include or exclude fields, returning a new record set of records with only those keys:
+   * - String: `'a b -c +d'`.
+   * - Array of strings: `['a', '-b']`.
+   * - Object notation: `{ a: 1, b: 1 }` or `{ c: 0 }`.
+   *
+   * Inclusive if any field is positively specified (no `-` or `0`).
+   *
+   * Exclusive if only negatives (`-`) or zeros (`0`).
+   *
+   * @example
+   * const users = RecordSet.of([{ id:1, name:'A', age:30 }]);
+   *
+   * users.select('id name').toArray(); // [{ id: 1, name: 'A' }]
+   *
+   * users.select('-age').toArray();    // [{ id: 1, name: 'A' }]
+   */
+  public select(
+    spec: string | string[] | Record<string, 0 | 1>
+  ): RecordSet<Partial<TRecord>> {
+    let includes: Array<string> = [];
+    let excludes: Array<string> = [];
+
+    if (typeof spec === 'object' && !Array.isArray(spec)) {
+      const keys = Object.keys(spec);
+
+      const isInclusive = keys.some((k) => {
+        return spec[k] === 1;
+      });
+
+      if (isInclusive) {
+        includes = keys.filter((k) => {
+          return spec[k] === 1;
+        });
+      } else {
+        excludes = keys.filter((k) => {
+          return spec[k] === 0;
+        });
+      }
+    } else {
+      /**
+       * Spec is String or Array
+       */
+      const tokens =
+        typeof spec === 'string' ? spec.split(/\s+/).filter(Boolean) : spec;
+
+      for (const t of tokens) {
+        if (t.startsWith('-')) {
+          excludes.push(t.slice(1));
+        } else if (t.startsWith('+')) {
+          includes.push(t.slice(1));
+        } else {
+          includes.push(t);
+        }
+      }
+    }
+
+    if (includes.length > 0) {
+      return this.pick(includes as any) as unknown as RecordSet<
+        Partial<TRecord>
+      >;
+    }
+
+    return this.omit(excludes as any) as unknown as RecordSet<Partial<TRecord>>;
   }
 
   /**
