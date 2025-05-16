@@ -2,19 +2,19 @@ import sift from 'sift';
 import type { Query } from 'sift';
 import orderBy from 'lodash.orderby';
 import uniqBy from 'lodash.uniqby';
-import { CollectionApi } from '../../types/collection.type';
+import { RecordSetApi } from '../../types/record-set.type';
 
-export class Collection<TRecord> implements CollectionApi<TRecord> {
+export class RecordSet<TRecord> implements RecordSetApi<TRecord> {
   private readonly records: Array<TRecord>;
 
-  static of<TRecord>(records?: Array<TRecord>): Collection<TRecord> {
-    return new Collection(records);
+  static of<TRecord>(records?: Array<TRecord>): RecordSet<TRecord> {
+    return new RecordSet(records);
   }
 
   private constructor(records: Array<TRecord> = []) {
     if (!Array.isArray(records)) {
       throw new Error(
-        `A collection records must be an array. You are seeing this error because a type of "${typeof records}" was passed to the collection constructor.`
+        `A record set records must be an array. You are seeing this error because a type of "${typeof records}" was passed to the record set constructor.`
       );
     }
 
@@ -49,12 +49,12 @@ export class Collection<TRecord> implements CollectionApi<TRecord> {
   /**
    * @method
    * @description
-   * Use this method to get a shallow-copied array of all records in the collection.
+   * Use this method to get a shallow-copied array of all records in the record set.
    *
    * @example
-   * const col = Collection.of([{ id: 1 }, { id: 2 }]);
+   * const record = RecordSet.of([{ id: 1 }, { id: 2 }]);
    *
-   * col.toArray(); // [{ id: 1 }, { id: 2 }]
+   * record.toArray(); // [{ id: 1 }, { id: 2 }]
    */
   public toArray(): Array<TRecord> {
     return ([] as Array<TRecord>).concat(this.records);
@@ -66,11 +66,11 @@ export class Collection<TRecord> implements CollectionApi<TRecord> {
    * Use this method to retrieve the record at the specified index, or null if out of bounds.
    *
    * @example
-   * const col = Collection.of([{ id: 1 }, { id: 2 }]);
+   * const record = RecordSet.of([{ id: 1 }, { id: 2 }]);
    *
-   * col.at(0); // { id: 1 }
+   * record.at(0); // { id: 1 }
    *
-   * col.at(5); // null
+   * record.at(5); // null
    */
   public at(index: number): TRecord | null {
     return this.records.at(index) ?? null;
@@ -79,14 +79,14 @@ export class Collection<TRecord> implements CollectionApi<TRecord> {
   /**
    * @method
    * @description
-   * Use this method to get the first record in the collection, or null if the collection is empty.
+   * Use this method to get the first record in the record set, or null if the record set is empty.
    *
    * @example
-   * const col = Collection.of([{ id: 1 }, { id: 2 }]);
+   * const record = RecordSet.of([{ id: 1 }, { id: 2 }]);
    *
-   * col.first(); // { id: 1 }
+   * record.first(); // { id: 1 }
    *
-   * Collection.of([]).first(); // null
+   * RecordSet.of([]).first(); // null
    */
   public first(): TRecord | null {
     return this.records[0] ?? null;
@@ -95,14 +95,14 @@ export class Collection<TRecord> implements CollectionApi<TRecord> {
   /**
    * @method
    * @description
-   * Use this method to get the last record in the collection, or null if the collection is empty.
+   * Use this method to get the last record in the record set, or null if the record set is empty.
    *
    * @example
-   * const col = Collection.of([{ id: 1 }, { id: 2 }]);
+   * const record = RecordSet.of([{ id: 1 }, { id: 2 }]);
    *
-   * col.last(); // { id: 2 }
+   * record.last(); // { id: 2 }
    *
-   * Collection.of([]).last(); // null
+   * RecordSet.of([]).last(); // null
    */
   public last(): TRecord | null {
     return this.records[this.records.length - 1] ?? null;
@@ -111,12 +111,12 @@ export class Collection<TRecord> implements CollectionApi<TRecord> {
   /**
    * @method
    * @description
-   * Use this method to get the number of records in the collection.
+   * Use this method to get the number of records in the record set.
    *
    * @example
-   * const col = Collection.of([1, 2, 3]);
+   * const record = RecordSet.of([1, 2, 3]);
    *
-   * col.length(); // 3
+   * record.length(); // 3
    */
   public length(): number {
     return this.records.length;
@@ -125,12 +125,12 @@ export class Collection<TRecord> implements CollectionApi<TRecord> {
   /**
    * @method
    * @description
-   * Use this method to determine whether the collection contains any records.
+   * Use this method to determine whether the record set contains any records.
    *
    * @example
-   * Collection.of([]).isEmpty(); // true
+   * RecordSet.of([]).isEmpty(); // true
    *
-   * Collection.of([1]).isEmpty(); // false
+   * RecordSet.of([1]).isEmpty(); // false
    */
   public isEmpty(): boolean {
     return this.records.length === 0;
@@ -146,7 +146,7 @@ export class Collection<TRecord> implements CollectionApi<TRecord> {
    * @example
    * type Person = { id: number; name: string; age: number };
    *
-   * const people = Collection.of<Person>([
+   * const people = RecordSet.of<Person>([
    *   { id: 1, name: 'Alice', age: 30 },
    *   { id: 2, name: 'Bob', age: 25 },
    *   { id: 3, name: 'Eve', age: 35 },
@@ -156,16 +156,16 @@ export class Collection<TRecord> implements CollectionApi<TRecord> {
    * const bobs = people.find({ name: 'Bob' });
    * console.log(bobs.toArray()); // [{ id: 2, name: 'Bob', age: 25 }]
    *
-   * // Calling find without a query returns the full collection
+   * // Calling find without a query returns the full record set
    * const all = people.find();
    * console.log(all.toArray()); // same as people.toArray()
    */
-  public find(query?: Query<TRecord>): Collection<TRecord> {
+  public find(query?: Query<TRecord>): RecordSet<TRecord> {
     if (!query) {
       return this;
     }
 
-    return Collection.of(this.records.filter(sift(query)));
+    return RecordSet.of(this.records.filter(sift(query)));
   }
 
   /**
@@ -180,7 +180,7 @@ export class Collection<TRecord> implements CollectionApi<TRecord> {
    * @example
    * type Person = { id: number; name: string; age: number };
    *
-   * const people = Collection.of<Person>([
+   * const people = RecordSet.of<Person>([
    *   { id: 1, name: 'Alice', age: 30 },
    *   { id: 2, name: 'Bob', age: 25 },
    * ]);
@@ -210,7 +210,7 @@ export class Collection<TRecord> implements CollectionApi<TRecord> {
    * @example
    * type Item = { category: string; value: number };
    *
-   * const items = Collection.of<Item>([
+   * const items = RecordSet.of<Item>([
    *   { category: 'fruit', value: 10 },
    *   { category: 'fruit', value: 20 },
    *   { category: 'vegetable', value: 15 },
@@ -238,7 +238,7 @@ export class Collection<TRecord> implements CollectionApi<TRecord> {
    * @example
    * type Item = { type: string; available: boolean };
    *
-   * const items = Collection.of<Item>([
+   * const items = RecordSet.of<Item>([
    *   { type: 'book', available: true },
    * ]);
    *
@@ -249,7 +249,7 @@ export class Collection<TRecord> implements CollectionApi<TRecord> {
    * console.log(hasMagazine); // false
    *
    * const hasAny = items.exists();
-   * console.log(hasAny); // true, because collection is not empty
+   * console.log(hasAny); // true, because record set is not empty
    */
   public exists(query?: Query<TRecord>): boolean {
     if (!query) {
@@ -267,7 +267,7 @@ export class Collection<TRecord> implements CollectionApi<TRecord> {
    * @example
    * type Product = { category: string; name: string };
    *
-   * const products = Collection.of<Product>([
+   * const products = RecordSet.of<Product>([
    *   { category: 'fruit', name: 'apple' },
    *   { category: 'vegetable', name: 'carrot' },
    *   { category: 'fruit', name: 'banana' },
@@ -294,17 +294,17 @@ export class Collection<TRecord> implements CollectionApi<TRecord> {
   /**
    * @method
    * @description
-   * Use this method to transform all records in the collection and return a new Collection of the transformed records.
+   * Use this method to transform all records in the record set and return a new RecordSet of the transformed records.
    *
    * @example
    * type User = { id: number; name: string; age: number };
    *
-   * const users = Collection.of<User>([
+   * const users = RecordSet.of<User>([
    *   { id: 1, name: 'Alice', age: 30 },
    *   { id: 2, name: 'Bob', age: 25 },
    * ]);
    *
-   * // Create a collection of user names
+   * // Create a record set of user names
    * const userNames = users.map(user => {
    *   return user.name;
    * });
@@ -313,20 +313,20 @@ export class Collection<TRecord> implements CollectionApi<TRecord> {
    */
   public map<TMappedRecord>(
     fn: (record: TRecord) => TMappedRecord
-  ): Collection<TMappedRecord> {
+  ): RecordSet<TMappedRecord> {
     const records: Array<TMappedRecord> = [];
 
     for (const record of this.records) {
       records.push(fn(record));
     }
 
-    return new Collection(records);
+    return new RecordSet(records);
   }
 
   /**
    * @method
    * @description
-   * Use this method to map each record to zero or more records, then flatten the results into a single new Collection.
+   * Use this method to map each record to zero or more records, then flatten the results into a single new RecordSet.
    *
    * This is handy for extracting nested arrays or expanding items.
    *
@@ -335,7 +335,7 @@ export class Collection<TRecord> implements CollectionApi<TRecord> {
    *
    * type Post = { id: number; comments: Array<Comment> };
    *
-   * const posts = Collection.of<Post>([
+   * const posts = RecordSet.of<Post>([
    *   { id: 1, comments: [{ id: 101, text: 'a' }, { id: 102, text: 'b' }] },
    *   { id: 2, comments: [{ id: 103, text: 'c' }] },
    * ]);
@@ -348,7 +348,7 @@ export class Collection<TRecord> implements CollectionApi<TRecord> {
    */
   public flatMap<TMappedRecord>(
     fn: (record: TRecord) => Array<TMappedRecord>
-  ): Collection<TMappedRecord> {
+  ): RecordSet<TMappedRecord> {
     const result: Array<TMappedRecord> = [];
 
     for (const record of this.records) {
@@ -359,18 +359,18 @@ export class Collection<TRecord> implements CollectionApi<TRecord> {
       }
     }
 
-    return new Collection(result);
+    return new RecordSet(result);
   }
 
   /**
    * @method
    * @description
-   * Use this method to reduce the collection to a single accumulated value.
+   * Use this method to reduce the record set to a single accumulated value.
    *
    * @example
    * type Person = { name: string; age: number };
    *
-   * const people = Collection.of<Person>([
+   * const people = RecordSet.of<Person>([
    *   { name: 'Alice', age: 30 },
    *   { name: 'Bob', age: 25 },
    *   { name: 'Eve', age: 35 },
@@ -398,12 +398,12 @@ export class Collection<TRecord> implements CollectionApi<TRecord> {
   /**
    * @method
    * @description
-   * Use this method to extract an array of a single field's values from all records in the collection.
+   * Use this method to extract an array of a single field's values from all records in the record set.
    *
    * @example
    * type Person = { id: number; name: string; age: number };
    *
-   * const people = Collection.of<Person>([
+   * const people = RecordSet.of<Person>([
    *   { id: 1, name: 'Alice', age: 30 },
    *   { id: 2, name: 'Bob', age: 25 },
    *   { id: 3, name: 'Eve', age: 35 },
@@ -426,12 +426,12 @@ export class Collection<TRecord> implements CollectionApi<TRecord> {
   /**
    * @method
    * @description
-   * Use this method to pick only the specified fields from each record, returning a new Collection of records with only those keys.
+   * Use this method to pick only the specified fields from each record, returning a new RecordSet of records with only those keys.
    *
    * @example
    * type User = { id: number; name: string; age: number; email: string };
    *
-   * const users = Collection.of<User>([
+   * const users = RecordSet.of<User>([
    *   { id: 1, name: 'Alice', age: 30, email: 'alice@example.com' },
    *   { id: 2, name: 'Bob', age: 25, email: 'bob@example.com' },
    * ]);
@@ -443,7 +443,7 @@ export class Collection<TRecord> implements CollectionApi<TRecord> {
    */
   public pick<TKey extends keyof TRecord>(
     fields: Array<TKey>
-  ): Collection<Pick<TRecord, TKey>> {
+  ): RecordSet<Pick<TRecord, TKey>> {
     const picked: Array<Pick<TRecord, TKey>> = [];
 
     for (const record of this.records) {
@@ -459,18 +459,18 @@ export class Collection<TRecord> implements CollectionApi<TRecord> {
       picked.push(pickObj);
     }
 
-    return Collection.of(picked);
+    return RecordSet.of(picked);
   }
 
   /**
    * @method
    * @description
-   * Use this method to omit the specified fields from each record, returning a new Collection of records without those keys.
+   * Use this method to omit the specified fields from each record, returning a new RecordSet of records without those keys.
    *
    * @example
    * type User = { id: number; name: string; age: number; password: string };
    *
-   * const users = Collection.of<User>([
+   * const users = RecordSet.of<User>([
    *   { id: 1, name: 'Alice', age: 30, password: 'secret1' },
    *   { id: 2, name: 'Bob', age: 25, password: 'secret2' },
    * ]);
@@ -483,7 +483,7 @@ export class Collection<TRecord> implements CollectionApi<TRecord> {
    */
   public omit<TKey extends keyof TRecord>(
     fields: Array<TKey>
-  ): Collection<Omit<TRecord, TKey>> {
+  ): RecordSet<Omit<TRecord, TKey>> {
     const omitted: Array<Omit<TRecord, TKey>> = [];
 
     for (const record of this.records) {
@@ -499,7 +499,7 @@ export class Collection<TRecord> implements CollectionApi<TRecord> {
       omitted.push(omitObj);
     }
 
-    return Collection.of(omitted);
+    return RecordSet.of(omitted);
   }
 
   /**
@@ -510,7 +510,7 @@ export class Collection<TRecord> implements CollectionApi<TRecord> {
    * @example
    * type Product = { name: string; price: number };
    *
-   * const products = Collection.of<Product>([
+   * const products = RecordSet.of<Product>([
    *   { name: 'Banana', price: 1.5 },
    *   { name: 'Apple', price: 2.0 },
    *   { name: 'Orange', price: 1.2 },
@@ -525,8 +525,8 @@ export class Collection<TRecord> implements CollectionApi<TRecord> {
    */
   public sort(
     compareFn: (a: TRecord, b: TRecord) => number
-  ): Collection<TRecord> {
-    return new Collection(
+  ): RecordSet<TRecord> {
+    return new RecordSet(
       ([] as Array<TRecord>).concat(this.records).sort(compareFn)
     );
   }
@@ -539,7 +539,7 @@ export class Collection<TRecord> implements CollectionApi<TRecord> {
    * @example
    * type Product = { category: string; price: number };
    *
-   * const products = Collection.of<Product>([
+   * const products = RecordSet.of<Product>([
    *   { category: 'fruit', price: 5 },
    *   { category: 'fruit', price: 3 },
    *   { category: 'vegetable', price: 4 },
@@ -565,7 +565,7 @@ export class Collection<TRecord> implements CollectionApi<TRecord> {
   public sortBy(
     iteratees: Array<keyof TRecord> | keyof TRecord,
     orders?: Array<'asc' | 'desc'> | 'asc' | 'desc'
-  ): Collection<TRecord> {
+  ): RecordSet<TRecord> {
     const keys = Array.isArray(iteratees)
       ? iteratees.map(String)
       : [String(iteratees)];
@@ -583,7 +583,7 @@ export class Collection<TRecord> implements CollectionApi<TRecord> {
       ords as Array<'asc' | 'desc'>
     );
 
-    return new Collection(sorted);
+    return new RecordSet(sorted);
   }
 
   /**
@@ -591,11 +591,11 @@ export class Collection<TRecord> implements CollectionApi<TRecord> {
    * @description
    * Use this method to group records by a key derived from each record.
    *
-   * It returns a `Map` where keys are group keys and values are Collections of grouped records.
+   * It returns a `Map` where keys are group keys and values are record sets of grouped records.
    * @example
    * type Person = { id: number; name: string; age: number };
    *
-   * const people = Collection.of<Person>([
+   * const people = RecordSet.of<Person>([
    *   { id: 1, name: 'Alice', age: 30 },
    *   { id: 2, name: 'Bob', age: 25 },
    *   { id: 3, name: 'Eve', age: 25 },
@@ -611,7 +611,7 @@ export class Collection<TRecord> implements CollectionApi<TRecord> {
    */
   public groupBy<TKey>(
     fn: (record: TRecord) => TKey
-  ): Map<TKey, Collection<TRecord>> {
+  ): Map<TKey, RecordSet<TRecord>> {
     const map = new Map<TKey, Array<TRecord>>();
 
     for (const record of this.records) {
@@ -626,12 +626,12 @@ export class Collection<TRecord> implements CollectionApi<TRecord> {
       }
     }
 
-    const collectionMap = new Map<TKey, Collection<TRecord>>();
+    const recordSetMap = new Map<TKey, RecordSet<TRecord>>();
 
     for (const [key, groupRecords] of map) {
-      collectionMap.set(key, new Collection(groupRecords));
+      recordSetMap.set(key, new RecordSet(groupRecords));
     }
-    return collectionMap;
+    return recordSetMap;
   }
 
   /**
@@ -642,7 +642,7 @@ export class Collection<TRecord> implements CollectionApi<TRecord> {
    * @example
    * type Item = { id: number; name: string };
    *
-   * const items = Collection.of<Item>([
+   * const items = RecordSet.of<Item>([
    *   { id: 1, name: 'First' },
    *   { id: 2, name: 'Second' },
    *   { id: 3, name: 'Third' },
@@ -657,8 +657,8 @@ export class Collection<TRecord> implements CollectionApi<TRecord> {
    * //   { id: 1, name: 'First' }
    * // ]
    */
-  public reverse(): Collection<TRecord> {
-    return new Collection(
+  public reverse(): RecordSet<TRecord> {
+    return new RecordSet(
       ([] as Array<TRecord>).concat(this.records).reverse()
     );
   }

@@ -1,15 +1,15 @@
 {
-  "name": "@future-widget-lab/record-collection",
+  "name": "@future-widget-lab/record-set",
   "version": "0.1.0",
-  "description": "A lightweight helper class for managing and querying in-memory record collections using MongoDB-like filters with `sift`.",
+  "description": "A lightweight helper class for managing and querying in-memory record set using MongoDB-like filters with `sift`.",
   "license": "MIT",
   "author": "Carlos Lobo",
   "main": "dist/index.js",
-  "module": "dist/record-collection.esm.js",
+  "module": "dist/record-set.esm.js",
   "typings": "dist/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/future-widget-lab/record-collection.git"
+    "url": "git+https://github.com/future-widget-lab/record-set.git"
   },
   "files": [
     "dist",
@@ -43,11 +43,11 @@
   },
   "size-limit": [
     {
-      "path": "dist/record-collection.cjs.production.min.js",
+      "path": "dist/record-set.cjs.production.min.js",
       "limit": "10.13 KB"
     },
     {
-      "path": "dist/record-collection.esm.js",
+      "path": "dist/record-set.esm.js",
       "limit": "10.13 KB"
     }
   ],

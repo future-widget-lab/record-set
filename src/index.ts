@@ -1,2 +1,2 @@
-export { Collection } from './helpers/collection/collection.helper';
-export type { CollectionApi } from './types/collection.type';
+export { RecordSet } from './helpers/collection/record-set.helper';
+export type { RecordSetApi } from './types/record-set.type';

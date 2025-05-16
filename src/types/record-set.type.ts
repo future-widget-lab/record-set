@@ -10,11 +10,11 @@ import type { Query } from 'sift';
  *
  * The type is not intended for holding mutable state, every method is meant to create a new instance. That's also the same reason why there are no operations like `create` or `save`.
  */
-export type CollectionApi<TRecord> = {
+export type RecordSetApi<TRecord> = {
   /**
    * @method
    * @description
-   * Use this method to get a shallow-copied array of all records in the collection.
+   * Use this method to get a shallow-copied array of all records in the record set.
    */
   toArray: () => Array<TRecord>;
   /**
@@ -26,25 +26,25 @@ export type CollectionApi<TRecord> = {
   /**
    * @method
    * @description
-   * Use this method to get the first record in the collection, or null if the collection is empty.
+   * Use this method to get the first record in the record set, or null if the record set is empty.
    */
   first: () => TRecord | null;
   /**
    * @method
    * @description
-   * Use this method to get the last record in the collection, or null if the collection is empty.
+   * Use this method to get the last record in the record set, or null if the record set is empty.
    */
   last: () => TRecord | null;
   /**
    * @method
    * @description
-   * Use this method to get the number of records in the collection.
+   * Use this method to get the number of records in the record set.
    */
   length: () => number;
   /**
    * @method
    * @description
-   * Use this method to determine whether the collection contains any records.
+   * Use this method to determine whether the record set contains any records.
    */
   isEmpty: () => boolean;
   /**
@@ -54,7 +54,7 @@ export type CollectionApi<TRecord> = {
    *
    * Fallsback to the the same set of items if no `query` is provided.
    */
-  find: (query: Query<TRecord>) => CollectionApi<TRecord>;
+  find: (query: Query<TRecord>) => RecordSetApi<TRecord>;
   /**
    * @method
    * @description
@@ -86,25 +86,25 @@ export type CollectionApi<TRecord> = {
   /**
    * @method
    * @description
-   * Use this method to transform all records in the collection and return a new Collection of the transformed records.
+   * Use this method to transform all records in the record set and return a new record set of the transformed records.
    */
   map: <TransformedRecord>(
     fn: (item: TRecord) => TransformedRecord
-  ) => CollectionApi<TransformedRecord>;
+  ) => RecordSetApi<TransformedRecord>;
   /**
    * @method
    * @description
-   * Use this method to map each record to zero or more records, then flatten the results into a single new Collection.
+   * Use this method to map each record to zero or more records, then flatten the results into a single new record set.
    *
    * This is handy for extracting nested arrays or expanding items.
    */
   flatMap: <TMappedRecord>(
     fn: (record: TRecord) => Array<TMappedRecord>
-  ) => CollectionApi<TMappedRecord>;
+  ) => RecordSetApi<TMappedRecord>;
   /**
    * @method
    * @description
-   * Use this method to reduce the collection to a single accumulated value.
+   * Use this method to reduce the record set to a single accumulated value.
    */
   reduce<TAccumulator>(
     fn: (accumulator: TAccumulator, record: TRecord) => TAccumulator,
@@ -113,25 +113,25 @@ export type CollectionApi<TRecord> = {
   /**
    * @method
    * @description
-   * Use this method to extract an array of a single field's values from all records in the collection.
+   * Use this method to extract an array of a single field's values from all records in the record set.
    */
   pluck: <TKey extends keyof TRecord>(key: TKey) => Array<TRecord[TKey]>;
   /**
    * @method
    * @description
-   * Use this method to pick only the specified fields from each record, returning a new Collection of records with only those keys.
+   * Use this method to pick only the specified fields from each record, returning a new record set of records with only those keys.
    */
   pick: <TKey extends keyof TRecord>(
     fields: Array<TKey>
-  ) => CollectionApi<Pick<TRecord, TKey>>;
+  ) => RecordSetApi<Pick<TRecord, TKey>>;
   /**
    * @method
    * @description
-   * Use this method to omit the specified fields from each record, returning a new Collection of records without those keys.
+   * Use this method to omit the specified fields from each record, returning a new record set of records without those keys.
    */
   omit: <TKey extends keyof TRecord>(
     fields: Array<TKey>
-  ) => CollectionApi<Omit<TRecord, TKey>>;
+  ) => RecordSetApi<Omit<TRecord, TKey>>;
   /**
    * @method
    * @description
@@ -139,11 +139,11 @@ export type CollectionApi<TRecord> = {
    */
   sort: (
     compareFn: (a: TRecord, b: TRecord) => number
-  ) => CollectionApi<TRecord>;
+  ) => RecordSetApi<TRecord>;
   /**
    * @method
    * @description
    * Use this method to sort the records by key(s) using lodash orderBy.
    */
-  reverse: () => CollectionApi<TRecord>;
+  reverse: () => RecordSetApi<TRecord>;
 };

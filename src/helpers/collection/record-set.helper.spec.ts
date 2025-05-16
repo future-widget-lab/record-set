@@ -1,4 +1,4 @@
-import { Collection } from './collection.helper';
+import { RecordSet } from './record-set.helper';
 
 type Person = {
   id: number;
@@ -13,32 +13,32 @@ const data: Array<Person> = [
   { id: 4, name: 'Bob', age: 40 },
 ];
 
-describe('Unit | Heler | Collection', () => {
-  it('should create an empty collection when undefined is passed', () => {
-    const col = Collection.of(undefined as any);
+describe('Unit | Heler | RecordSet', () => {
+  it('should create an empty record set when undefined is passed', () => {
+    const records = RecordSet.of(undefined as any);
     const expectedLength = 0;
-    const actualLength = col.length();
+    const actualLength = records.length();
 
     expect(actualLength).toEqual(expectedLength);
-    expect(col.isEmpty()).toBeTruthy();
+    expect(records.isEmpty()).toBeTruthy();
 
     const expectedArray: Array<Person> = [];
-    const actualArray = col.toArray();
+    const actualArray = records.toArray();
     expect(actualArray).toEqual(expectedArray);
   });
 
   it('should throw an error for non-array input in constructor', () => {
-    const construct = () => new (Collection as any)(123);
+    const construct = () => new (RecordSet as any)(123);
 
     expect(construct).toThrow(
-      /A collection records must be an array. You are seeing this error because a type of \"number\" was passed to the collection constructor./i
+      /A record set records must be an array. You are seeing this error because a type of \"number\" was passed to the record set constructor./i
     );
   });
 
   it('should return a shallow copy using toArray', () => {
-    const col = Collection.of(data);
-    const arr1 = col.toArray();
-    const arr2 = col.toArray();
+    const records = RecordSet.of(data);
+    const arr1 = records.toArray();
+    const arr2 = records.toArray();
 
     const expected = data;
     expect(arr1).toEqual(expected);
@@ -46,124 +46,124 @@ describe('Unit | Heler | Collection', () => {
   });
 
   it('should return correct element or null using at', () => {
-    const col = Collection.of(data);
+    const records = RecordSet.of(data);
 
-    expect(col.at(0)).toEqual(data[0]);
-    expect(col.at(3)).toEqual(data[3]);
-    expect(col.at(4)).toBeNull();
-    expect(col.at(-1)).toEqual(data[data.length - 1]);
+    expect(records.at(0)).toEqual(data[0]);
+    expect(records.at(3)).toEqual(data[3]);
+    expect(records.at(4)).toBeNull();
+    expect(records.at(-1)).toEqual(data[data.length - 1]);
   });
 
   it('should return first and last element or null using first and last', () => {
-    const col = Collection.of(data);
+    const records = RecordSet.of(data);
     const expectedHead = data[0];
-    const actualHead = col.first();
+    const actualHead = records.first();
     expect(actualHead).toEqual(expectedHead);
 
     const expectedTail = data[data.length - 1];
-    const actualTail = col.last();
+    const actualTail = records.last();
     expect(actualTail).toEqual(expectedTail);
 
-    const empty = Collection.of([]);
+    const empty = RecordSet.of([]);
     expect(empty.first()).toBeNull();
     expect(empty.last()).toBeNull();
   });
 
   it('should return correct length and emptiness using length and isEmpty', () => {
-    const col = Collection.of(data);
+    const records = RecordSet.of(data);
 
-    expect(col.length()).toEqual(data.length);
+    expect(records.length()).toEqual(data.length);
 
-    expect(col.isEmpty()).toBeFalsy();
+    expect(records.isEmpty()).toBeFalsy();
 
-    expect(Collection.of([]).isEmpty()).toBeTruthy();
+    expect(RecordSet.of([]).isEmpty()).toBeTruthy();
   });
 
   it('should return same instance when no query is provided using find', () => {
-    const col = Collection.of(data);
+    const records = RecordSet.of(data);
 
-    const actual = col.find();
+    const actual = records.find();
 
-    expect(actual).toEqual(col);
+    expect(actual).toEqual(records);
   });
 
   it('should filter records correctly using find', () => {
-    const col = Collection.of(data);
+    const records = RecordSet.of(data);
 
     const expected = [
       { id: 2, name: 'Bob', age: 25 },
       { id: 4, name: 'Bob', age: 40 },
     ];
 
-    const actual = col.find({ name: 'Bob' }).toArray();
+    const actual = records.find({ name: 'Bob' }).toArray();
 
     expect(actual).toEqual(expected);
   });
 
   it('should return first when no query is provided using findOne', () => {
-    const col = Collection.of(data);
+    const records = RecordSet.of(data);
 
     const expected = data[0];
-    const actual = col.findOne();
+    const actual = records.findOne();
 
     expect(actual).toEqual(expected);
   });
 
   it('should return correct record or null using findOne', () => {
-    const col = Collection.of(data);
+    const records = RecordSet.of(data);
     const expectedMatch = data[1];
-    const actualMatch = col.findOne({ name: 'Bob' });
+    const actualMatch = records.findOne({ name: 'Bob' });
     expect(actualMatch).toEqual(expectedMatch);
 
-    const actualMiss = col.findOne({ age: { $gt: 100 } });
+    const actualMiss = records.findOne({ age: { $gt: 100 } });
     expect(actualMiss).toBeNull();
   });
 
   it('should return correct counts using count', () => {
-    const col = Collection.of(data);
+    const records = RecordSet.of(data);
 
     const expectedTotal = data.length;
-    expect(col.count()).toEqual(expectedTotal);
+    expect(records.count()).toEqual(expectedTotal);
 
     const expectedFiltered = 2;
-    expect(col.count({ name: 'Bob' })).toEqual(expectedFiltered);
+    expect(records.count({ name: 'Bob' })).toEqual(expectedFiltered);
   });
 
   it('should return correct existence using exists', () => {
-    const col = Collection.of(data);
+    const records = RecordSet.of(data);
 
-    expect(col.exists()).toBeTruthy();
-    expect(Collection.of([]).exists()).toBeFalsy();
-    expect(col.exists({ age: { $gt: 30 } })).toBeTruthy();
-    expect(col.exists({ age: { $gt: 100 } })).toBeFalsy();
+    expect(records.exists()).toBeTruthy();
+    expect(RecordSet.of([]).exists()).toBeFalsy();
+    expect(records.exists({ age: { $gt: 30 } })).toBeTruthy();
+    expect(records.exists({ age: { $gt: 100 } })).toBeFalsy();
   });
 
   it('should return distinct values correctly using distinct', () => {
-    const col = Collection.of(data);
+    const records = RecordSet.of(data);
 
     const expectedNames = ['Alice', 'Bob', 'Eve'].sort();
-    const actualNames = col.distinct('name').sort();
+    const actualNames = records.distinct('name').sort();
     expect(actualNames).toEqual(expectedNames);
 
     const expectedAges = [25, 40].sort();
-    const actualAges = col.distinct('age', { name: 'Bob' }).sort();
+    const actualAges = records.distinct('age', { name: 'Bob' }).sort();
     expect(actualAges).toEqual(expectedAges);
   });
 
   it('should transform items correctly using map', () => {
-    const col = Collection.of(data);
+    const records = RecordSet.of(data);
 
     const expected = ['Alice', 'Bob', 'Eve', 'Bob'];
 
-    const actual = col.map((p) => p.name).toArray();
+    const actual = records.map((p) => p.name).toArray();
 
     expect(actual).toEqual(expected);
   });
 
   it('should reduce records correctly using reduce', () => {
-    const col = Collection.of(data);
+    const records = RecordSet.of(data);
 
-    const totalAge = col.reduce((acc, person) => {
+    const totalAge = records.reduce((acc, person) => {
       return acc + person.age;
     }, 0);
 
@@ -171,7 +171,7 @@ describe('Unit | Heler | Collection', () => {
   });
 
   it('should flatMap nested arrays correctly using flatMap', () => {
-    const nested = Collection.of<Array<number>>([[1, 2], [3, 4]]);
+    const nested = RecordSet.of<Array<number>>([[1, 2], [3, 4]]);
 
     const flattened = nested.flatMap((arr) => {
       return arr;
@@ -181,18 +181,18 @@ describe('Unit | Heler | Collection', () => {
   });
 
   it('should extract field values correctly using pluck', () => {
-    const col = Collection.of(data);
+    const records = RecordSet.of(data);
 
     const expected = [30, 25, 35, 40];
 
-    const actual = col.pluck('age');
+    const actual = records.pluck('age');
 
     expect(actual).toEqual(expected);
   });
 
   it('should group records correctly using groupBy', () => {
-    const col = Collection.of(data);
-    const grouped = col.groupBy((p) => {
+    const records = RecordSet.of(data);
+    const grouped = records.groupBy((p) => {
       return p.name;
     });
 
@@ -206,23 +206,23 @@ describe('Unit | Heler | Collection', () => {
   });
 
   it('should reverse records correctly using reverse', () => {
-    const col = Collection.of(data);
+    const records = RecordSet.of(data);
 
     const expected = [4, 3, 2, 1];
 
-    const actual = col.reverse().pluck('id');
+    const actual = records.reverse().pluck('id');
 
     expect(actual).toEqual(expected);
   });
 
   it('should be iterable using for...of', () => {
-    const col = Collection.of(data);
+    const records = RecordSet.of(data);
 
     const ids: number[] = [];
 
     const expected = [1, 2, 3, 4];
 
-    for (const item of col) {
+    for (const item of records) {
       ids.push(item.id);
     }
 
@@ -230,7 +230,7 @@ describe('Unit | Heler | Collection', () => {
   });
 
   it('should select specified keys correctly using pick', () => {
-    const col = Collection.of(data);
+    const records = RecordSet.of(data);
 
     const expected = [
       { id: 1, name: 'Alice' },
@@ -239,13 +239,13 @@ describe('Unit | Heler | Collection', () => {
       { id: 4, name: 'Bob' },
     ];
 
-    const actual = col.pick(['id', 'name']).toArray();
+    const actual = records.pick(['id', 'name']).toArray();
 
     expect(actual).toEqual(expected);
   });
 
   it('should remove specified keys correctly using omit', () => {
-    const col = Collection.of(data);
+    const records = RecordSet.of(data);
 
     const expected = [
       { id: 1, name: 'Alice' },
@@ -254,17 +254,17 @@ describe('Unit | Heler | Collection', () => {
       { id: 4, name: 'Bob' },
     ];
 
-    const actual = col.omit(['age']).toArray();
+    const actual = records.omit(['age']).toArray();
 
     expect(actual).toEqual(expected);
   });
 
   it('should sort records correctly using sort', () => {
-    const col = Collection.of(data);
+    const records = RecordSet.of(data);
 
     const expected = [25, 30, 35, 40];
 
-    const actual = col
+    const actual = records
       .sort((a, b) => {
         return a.age - b.age;
       })
@@ -274,23 +274,23 @@ describe('Unit | Heler | Collection', () => {
   });
 
   it('should sort ascending by a single key (string)', () => {
-    const col = Collection.of(data);
+    const records = RecordSet.of(data);
 
-    const actual = col.sortBy('age').pluck('age');
+    const actual = records.sortBy('age').pluck('age');
 
     expect(actual).toEqual([25, 30, 35, 40]);
   });
 
   it('should sort descending by a single key (string)', () => {
-    const col = Collection.of(data);
+    const records = RecordSet.of(data);
 
-    const actual = col.sortBy('age', 'desc').pluck('age');
+    const actual = records.sortBy('age', 'desc').pluck('age');
 
     expect(actual).toEqual([40, 35, 30, 25]);
   });
 
   it('should sort ascending by multiple keys (array)', () => {
-    const multiData = Collection.of([
+    const multiData = RecordSet.of([
       { name: 'Bob', age: 30 },
       { name: 'Bob', age: 25 },
       { name: 'Alice', age: 35 },
@@ -306,7 +306,7 @@ describe('Unit | Heler | Collection', () => {
   });
 
   it('should sort by multiple keys with different orders', () => {
-    const multiData = Collection.of([
+    const multiData = RecordSet.of([
       { name: 'Bob', age: 30 },
       { name: 'Bob', age: 25 },
       { name: 'Alice', age: 35 },
