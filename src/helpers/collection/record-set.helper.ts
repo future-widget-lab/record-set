@@ -25,6 +25,7 @@ export class RecordSet<TRecord> implements RecordSetApi<TRecord> {
     this.last = this.last.bind(this);
     this.skip = this.skip.bind(this);
     this.limit = this.limit.bind(this);
+    this.page = this.page.bind(this);
     this.length = this.length.bind(this);
     this.isEmpty = this.isEmpty.bind(this);
     this.find = this.find.bind(this);
@@ -153,6 +154,36 @@ export class RecordSet<TRecord> implements RecordSetApi<TRecord> {
     }
 
     return new RecordSet(this.records.slice(0, count));
+  }
+
+  /**
+   * @method
+   * @description
+   * Return a record set containing the records corresponding to the given page number (1-based)
+   * and page size.
+   *
+   * This method calculates the starting index by `(pageNumber - 1) * pageSize`, then skips that many records,
+   * and finally limits the result to `pageSize` number of records.
+   *
+   * If either `pageNumber` or `pageSize` is less than 1, this method returns an empty RecordSet.
+   *
+   * @example
+   * const records = RecordSet.of([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+   *
+   * const firstPage = records.page(1, 3);
+   * console.log(firstPage.toArray()); // [1, 2, 3]
+   *
+   * const secondPage = records.page(2, 3);
+   * console.log(secondPage.toArray()); // [4, 5, 6]
+   */
+  public page(pageNumber: number, pageSize: number): RecordSet<TRecord> {
+    if (pageNumber < 1 || pageSize < 1) {
+      return new RecordSet([] as Array<TRecord>);
+    }
+
+    const startIndex = (pageNumber - 1) * pageSize;
+
+    return this.skip(startIndex).limit(pageSize);
   }
 
   /**

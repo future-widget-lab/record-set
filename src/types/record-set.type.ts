@@ -41,12 +41,20 @@ export type RecordSetApi<TRecord> = {
    * Use this method to skip the first `count` records in the record set.
    */
   skip: (count: number) => RecordSetApi<TRecord>;
-    /**
+  /**
    * @method
    * @description
    * Use this method to take at most `count` records from the start of the record set.
    */
-    limit: (count: number) => RecordSetApi<TRecord>;
+  limit: (count: number) => RecordSetApi<TRecord>;
+  /**
+   * @method
+   * @description
+   * Use this method to return a record set containing the records corresponding to the given page number (1-based)
+   * and page size.
+   */
+  page: (pageNumber: number, pageSize: number) => RecordSetApi<TRecord>;
+
   /**
    * @method
    * @description

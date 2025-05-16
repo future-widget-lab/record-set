@@ -131,6 +131,33 @@ describe('Unit | Heler | RecordSet', () => {
     expect(actual).toEqual([]);
   });
 
+  it('should return correct records for a valid page', () => {
+    const records = RecordSet.of([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+
+    const page1 = records.page(1, 3).toArray();
+    expect(page1).toEqual([1, 2, 3]);
+
+    const page2 = records.page(2, 3).toArray();
+    expect(page2).toEqual([4, 5, 6]);
+
+    const page4 = records.page(4, 3).toArray();
+    expect(page4).toEqual([10]); // last partial page
+  });
+
+  it('should return empty record set for invalid pageNumber or pageSize', () => {
+    const records = RecordSet.of([1, 2, 3]);
+
+    expect(records.page(0, 3).toArray()).toEqual([]);
+    expect(records.page(1, 0).toArray()).toEqual([]);
+    expect(records.page(-5, 2).toArray()).toEqual([]);
+  });
+
+  it('should return empty record set when page is out of range', () => {
+    const records = RecordSet.of([1, 2, 3]);
+
+    expect(records.page(10, 3).toArray()).toEqual([]);
+  });
+
   it('should return correct length and emptiness using length and isEmpty', () => {
     const records = RecordSet.of(data);
 
