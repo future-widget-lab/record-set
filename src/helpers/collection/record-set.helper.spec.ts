@@ -69,6 +69,68 @@ describe('Unit | Heler | RecordSet', () => {
     expect(empty.last()).toBeNull();
   });
 
+  it('should skip the specified number of records', () => {
+    const records = RecordSet.of([1, 2, 3, 4, 5]);
+
+    const actual = records.skip(2).toArray();
+
+    expect(actual).toEqual([3, 4, 5]);
+  });
+
+  it('should return the same record set when skip is 0 or negative', () => {
+    const records = RecordSet.of([1, 2, 3]);
+
+    expect(records.skip(0).toArray()).toEqual([1, 2, 3]);
+    expect(records.skip(-5).toArray()).toEqual([1, 2, 3]);
+  });
+
+  it('should return an empty record set if skip exceeds length', () => {
+    const records = RecordSet.of([1, 2, 3]);
+
+    const actual = records.skip(10).toArray();
+
+    expect(actual).toEqual([]);
+  });
+
+  it('should return an empty record set if called on empty RecordSet', () => {
+    const records = RecordSet.of([]);
+
+    const actual = records.skip(3).toArray();
+
+    expect(actual).toEqual([]);
+  });
+
+  it('should return the first `count` records', () => {
+    const records = RecordSet.of([1, 2, 3, 4, 5]);
+
+    const actual = records.limit(3).toArray();
+
+    expect(actual).toEqual([1, 2, 3]);
+  });
+
+  it('should return empty record set if limit is zero or negative', () => {
+    const records = RecordSet.of([1, 2, 3]);
+
+    expect(records.limit(0).toArray()).toEqual([]);
+    expect(records.limit(-5).toArray()).toEqual([]);
+  });
+
+  it('should return the entire set if limit exceeds length', () => {
+    const records = RecordSet.of([1, 2, 3]);
+
+    const actual = records.limit(10).toArray();
+
+    expect(actual).toEqual([1, 2, 3]);
+  });
+
+  it('should return empty record set if called on empty RecordSet', () => {
+    const records = RecordSet.of([]);
+
+    const actual = records.limit(3).toArray();
+
+    expect(actual).toEqual([]);
+  });
+
   it('should return correct length and emptiness using length and isEmpty', () => {
     const records = RecordSet.of(data);
 
@@ -171,7 +233,10 @@ describe('Unit | Heler | RecordSet', () => {
   });
 
   it('should flatMap nested arrays correctly using flatMap', () => {
-    const nested = RecordSet.of<Array<number>>([[1, 2], [3, 4]]);
+    const nested = RecordSet.of<Array<number>>([
+      [1, 2],
+      [3, 4],
+    ]);
 
     const flattened = nested.flatMap((arr) => {
       return arr;

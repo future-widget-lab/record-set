@@ -38,6 +38,18 @@ export type RecordSetApi<TRecord> = {
   /**
    * @method
    * @description
+   * Use this method to skip the first `count` records in the record set.
+   */
+  skip: (count: number) => RecordSetApi<TRecord>;
+    /**
+   * @method
+   * @description
+   * Use this method to take at most `count` records from the start of the record set.
+   */
+    limit: (count: number) => RecordSetApi<TRecord>;
+  /**
+   * @method
+   * @description
    * Use this method to get the number of records in the record set.
    */
   length: () => number;

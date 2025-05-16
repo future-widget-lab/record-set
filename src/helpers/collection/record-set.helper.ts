@@ -23,6 +23,8 @@ export class RecordSet<TRecord> implements RecordSetApi<TRecord> {
     this.at = this.at.bind(this);
     this.first = this.first.bind(this);
     this.last = this.last.bind(this);
+    this.skip = this.skip.bind(this);
+    this.limit = this.limit.bind(this);
     this.length = this.length.bind(this);
     this.isEmpty = this.isEmpty.bind(this);
     this.find = this.find.bind(this);
@@ -106,6 +108,51 @@ export class RecordSet<TRecord> implements RecordSetApi<TRecord> {
    */
   public last(): TRecord | null {
     return this.records[this.records.length - 1] ?? null;
+  }
+
+  /**
+   * @method
+   * @description
+   * Use this method to skip the first `count` records and return a new record set with the remaining records.
+   *
+   * Falls back to the same set of records if no `query` is provided.
+   *
+   * @example
+   * const records = RecordSet.of([1, 2, 3, 4, 5]);
+   *
+   * const skipped = records.skip(2);
+   *
+   * console.log(skipped.toArray()); // [3, 4, 5]
+   */
+  public skip(count: number): RecordSet<TRecord> {
+    if (count <= 0) {
+      return this;
+    }
+
+    return new RecordSet(this.records.slice(count));
+  }
+
+  /**
+   * @method
+   * @description
+   * Use this method to take at most `count` records from the start of the record set.
+   *
+   * @example
+   * const records = RecordSet.of([1, 2, 3, 4, 5]);
+   *
+   * const limited = records.limit(3);
+   * console.log(limited.toArray()); // [1, 2, 3]
+   */
+  public limit(count: number): RecordSet<TRecord> {
+    if (count < 0) {
+      return new RecordSet([] as Array<TRecord>);
+    }
+
+    if (count === 0) {
+      return new RecordSet([] as Array<TRecord>);
+    }
+
+    return new RecordSet(this.records.slice(0, count));
   }
 
   /**
@@ -658,8 +705,6 @@ export class RecordSet<TRecord> implements RecordSetApi<TRecord> {
    * // ]
    */
   public reverse(): RecordSet<TRecord> {
-    return new RecordSet(
-      ([] as Array<TRecord>).concat(this.records).reverse()
-    );
+    return new RecordSet(([] as Array<TRecord>).concat(this.records).reverse());
   }
 }
