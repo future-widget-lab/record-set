@@ -1,8 +1,27 @@
-import sift from 'sift';
 import type { Query } from 'sift';
-import orderBy from 'lodash.orderby';
-import uniqBy from 'lodash.uniqby';
 import { RecordSetApi } from '../../types/record-set.type';
+import { at } from '../at/at.helper';
+import { first } from '../first/first.helper';
+import { last } from '../last/last.helper';
+import { skip } from '../skip/skip.helper';
+import { limit } from '../limit/limit.helper';
+import { omit } from '../omit/omit.helper';
+import { page } from '../page/page.helper';
+import { find } from '../find/find.helper';
+import { findOne } from '../find-one/find-one.helper';
+import { count } from '../count/count.helper';
+import { exists } from '../exists/exists.helper';
+import { distinct } from '../distinct/distinct.helper';
+import { map } from '../map/map.helper';
+import { flatMap } from '../flat-map/flat-map.helper';
+import { reduce } from '../reduce/reduce.helper';
+import { pluck } from '../pluck/pluck.helper';
+import { pick } from '../pick/pick.helper';
+import { select } from '../select/select.helper';
+import { sort } from '../sort/sort.helper';
+import { sortBy } from '../sort-by/sort-by.helper';
+import { groupBy } from '../group-by/group-by.helper';
+import { reverse } from '../reverse/reverse.helper';
 
 export class RecordSet<TRecord> implements RecordSetApi<TRecord> {
   private readonly records: Array<TRecord>;
@@ -77,7 +96,7 @@ export class RecordSet<TRecord> implements RecordSetApi<TRecord> {
    * record.at(5); // null
    */
   public at(index: number): TRecord | null {
-    return this.records.at(index) ?? null;
+    return at({ index, records: this.records });
   }
 
   /**
@@ -93,7 +112,7 @@ export class RecordSet<TRecord> implements RecordSetApi<TRecord> {
    * RecordSet.of([]).first(); // null
    */
   public first(): TRecord | null {
-    return this.records[0] ?? null;
+    return first({ records: this.records });
   }
 
   /**
@@ -109,15 +128,13 @@ export class RecordSet<TRecord> implements RecordSetApi<TRecord> {
    * RecordSet.of([]).last(); // null
    */
   public last(): TRecord | null {
-    return this.records[this.records.length - 1] ?? null;
+    return last({ records: this.records });
   }
 
   /**
    * @method
    * @description
-   * Use this method to skip the first `count` records and return a new record set with the remaining records.
-   *
-   * Falls back to the same set of records if no `query` is provided.
+   * Use this method to skip the first `count` records.
    *
    * @example
    * const records = RecordSet.of([1, 2, 3, 4, 5]);
@@ -127,11 +144,7 @@ export class RecordSet<TRecord> implements RecordSetApi<TRecord> {
    * console.log(skipped.toArray()); // [3, 4, 5]
    */
   public skip(count: number): RecordSet<TRecord> {
-    if (count <= 0) {
-      return this;
-    }
-
-    return new RecordSet(this.records.slice(count));
+    return new RecordSet(skip({ count, records: this.records }));
   }
 
   /**
@@ -146,25 +159,15 @@ export class RecordSet<TRecord> implements RecordSetApi<TRecord> {
    * console.log(limited.toArray()); // [1, 2, 3]
    */
   public limit(count: number): RecordSet<TRecord> {
-    if (count < 0) {
-      return new RecordSet([] as Array<TRecord>);
-    }
-
-    if (count === 0) {
-      return new RecordSet([] as Array<TRecord>);
-    }
-
-    return new RecordSet(this.records.slice(0, count));
+    return new RecordSet(limit({ count, records: this.records }));
   }
 
   /**
    * @method
    * @description
-   * Return a record set containing the records corresponding to the given page number (1-based)
-   * and page size.
+   * Use this method to return a record set containing the records corresponding to the given page number (1-based) and page size.
    *
-   * This method calculates the starting index by `(pageNumber - 1) * pageSize`, then skips that many records,
-   * and finally limits the result to `pageSize` number of records.
+   * This method calculates the starting index by `(pageNumber - 1) * pageSize`, then skips that many records, and finally limits the result to `pageSize` number of records.
    *
    * If either `pageNumber` or `pageSize` is less than 1, this method returns an empty RecordSet.
    *
@@ -178,13 +181,7 @@ export class RecordSet<TRecord> implements RecordSetApi<TRecord> {
    * console.log(secondPage.toArray()); // [4, 5, 6]
    */
   public page(pageNumber: number, pageSize: number): RecordSet<TRecord> {
-    if (pageNumber < 1 || pageSize < 1) {
-      return new RecordSet([] as Array<TRecord>);
-    }
-
-    const startIndex = (pageNumber - 1) * pageSize;
-
-    return this.skip(startIndex).limit(pageSize);
+    return new RecordSet(page({ pageNumber, pageSize, records: this.records }));
   }
 
   /**
@@ -240,11 +237,7 @@ export class RecordSet<TRecord> implements RecordSetApi<TRecord> {
    * console.log(all.toArray()); // same as people.toArray()
    */
   public find(query?: Query<TRecord>): RecordSet<TRecord> {
-    if (!query) {
-      return this;
-    }
-
-    return RecordSet.of(this.records.filter(sift(query)));
+    return RecordSet.of(find({ query, records: this.records }));
   }
 
   /**
@@ -274,11 +267,7 @@ export class RecordSet<TRecord> implements RecordSetApi<TRecord> {
    * console.log(firstPerson); // { id: 1, name: 'Alice', age: 30 }
    */
   public findOne(query?: Query<TRecord>): TRecord | null {
-    if (!query) {
-      return this.first();
-    }
-
-    return this.records.find(sift(query)) ?? null;
+    return findOne({ query, records: this.records });
   }
 
   /**
@@ -302,11 +291,7 @@ export class RecordSet<TRecord> implements RecordSetApi<TRecord> {
    * console.log(totalCount); // 3
    */
   public count(query?: Query<TRecord>): number {
-    if (!query) {
-      return this.length();
-    }
-
-    return this.records.filter(sift(query)).length;
+    return count({ query, records: this.records });
   }
 
   /**
@@ -331,11 +316,7 @@ export class RecordSet<TRecord> implements RecordSetApi<TRecord> {
    * console.log(hasAny); // true, because record set is not empty
    */
   public exists(query?: Query<TRecord>): boolean {
-    if (!query) {
-      return !this.isEmpty();
-    }
-
-    return this.records.some(sift(query));
+    return exists({ query, records: this.records });
   }
 
   /**
@@ -359,15 +340,7 @@ export class RecordSet<TRecord> implements RecordSetApi<TRecord> {
    * console.log(fruitNames); // ['apple', 'banana']
    */
   public distinct(field: keyof TRecord, query?: Query<TRecord>): Array<any> {
-    const filteredItems = query
-      ? this.records.filter(sift(query))
-      : this.records;
-
-    const uniqueItems = uniqBy(filteredItems, field as string);
-
-    return uniqueItems.map((record) => {
-      return record[field];
-    });
+    return distinct({ field, query, records: this.records });
   }
 
   /**
@@ -393,13 +366,7 @@ export class RecordSet<TRecord> implements RecordSetApi<TRecord> {
   public map<TMappedRecord>(
     fn: (record: TRecord) => TMappedRecord
   ): RecordSet<TMappedRecord> {
-    const records: Array<TMappedRecord> = [];
-
-    for (const record of this.records) {
-      records.push(fn(record));
-    }
-
-    return new RecordSet(records);
+    return new RecordSet(map({ transformer: fn, records: this.records }));
   }
 
   /**
@@ -428,17 +395,7 @@ export class RecordSet<TRecord> implements RecordSetApi<TRecord> {
   public flatMap<TMappedRecord>(
     fn: (record: TRecord) => Array<TMappedRecord>
   ): RecordSet<TMappedRecord> {
-    const result: Array<TMappedRecord> = [];
-
-    for (const record of this.records) {
-      const mapped = fn(record);
-      // Push all items returned by fn into result
-      for (const subItem of mapped) {
-        result.push(subItem);
-      }
-    }
-
-    return new RecordSet(result);
+    return new RecordSet(flatMap({ transformer: fn, records: this.records }));
   }
 
   /**
@@ -465,13 +422,7 @@ export class RecordSet<TRecord> implements RecordSetApi<TRecord> {
     fn: (accumulator: TAccumulator, record: TRecord) => TAccumulator,
     initialValue: TAccumulator
   ): TAccumulator {
-    let accumulator = initialValue;
-
-    for (const record of this.records) {
-      accumulator = fn(accumulator, record);
-    }
-
-    return accumulator;
+    return reduce({ reducer: fn, initialValue, records: this.records });
   }
 
   /**
@@ -493,13 +444,7 @@ export class RecordSet<TRecord> implements RecordSetApi<TRecord> {
    * console.log(ages); // [30, 25, 35]
    */
   public pluck<TKey extends keyof TRecord>(key: TKey): Array<TRecord[TKey]> {
-    const records: Array<TRecord[TKey]> = [];
-
-    for (const record of this.records) {
-      records.push(record[key]);
-    }
-
-    return records;
+    return pluck({ key, records: this.records });
   }
 
   /**
@@ -523,28 +468,13 @@ export class RecordSet<TRecord> implements RecordSetApi<TRecord> {
   public pick<TKey extends keyof TRecord>(
     fields: Array<TKey>
   ): RecordSet<Pick<TRecord, TKey>> {
-    const picked: Array<Pick<TRecord, TKey>> = [];
-
-    for (const record of this.records) {
-      const pickObj = {} as Pick<TRecord, TKey>;
-
-      for (const field of fields) {
-        // @ts-expect-error
-        if (field in record) {
-          pickObj[field] = record[field];
-        }
-      }
-
-      picked.push(pickObj);
-    }
-
-    return RecordSet.of(picked);
+    return RecordSet.of(pick({ fields, records: this.records }));
   }
 
   /**
    * @method
    * @description
-   * Use this method to omit the specified fields from each record, returning a new RecordSet of records without those keys.
+   * Use this method to omit the specified fields from each record, returning a new record set of records without those keys.
    *
    * @example
    * type User = { id: number; name: string; age: number; password: string };
@@ -563,22 +493,7 @@ export class RecordSet<TRecord> implements RecordSetApi<TRecord> {
   public omit<TKey extends keyof TRecord>(
     fields: Array<TKey>
   ): RecordSet<Omit<TRecord, TKey>> {
-    const omitted: Array<Omit<TRecord, TKey>> = [];
-
-    for (const record of this.records) {
-      const omitObj = { ...record } as Omit<TRecord, TKey>;
-
-      for (const field of fields) {
-        if (field in omitObj) {
-          // @ts-expect-error
-          delete omitObj[field];
-        }
-      }
-
-      omitted.push(omitObj);
-    }
-
-    return RecordSet.of(omitted);
+    return RecordSet.of(omit({ fields, records: this.records }));
   }
 
   /**
@@ -603,50 +518,7 @@ export class RecordSet<TRecord> implements RecordSetApi<TRecord> {
   public select(
     spec: string | string[] | Record<string, 0 | 1>
   ): RecordSet<Partial<TRecord>> {
-    let includes: Array<string> = [];
-    let excludes: Array<string> = [];
-
-    if (typeof spec === 'object' && !Array.isArray(spec)) {
-      const keys = Object.keys(spec);
-
-      const isInclusive = keys.some((k) => {
-        return spec[k] === 1;
-      });
-
-      if (isInclusive) {
-        includes = keys.filter((k) => {
-          return spec[k] === 1;
-        });
-      } else {
-        excludes = keys.filter((k) => {
-          return spec[k] === 0;
-        });
-      }
-    } else {
-      /**
-       * Spec is String or Array
-       */
-      const tokens =
-        typeof spec === 'string' ? spec.split(/\s+/).filter(Boolean) : spec;
-
-      for (const t of tokens) {
-        if (t.startsWith('-')) {
-          excludes.push(t.slice(1));
-        } else if (t.startsWith('+')) {
-          includes.push(t.slice(1));
-        } else {
-          includes.push(t);
-        }
-      }
-    }
-
-    if (includes.length > 0) {
-      return this.pick(includes as any) as unknown as RecordSet<
-        Partial<TRecord>
-      >;
-    }
-
-    return this.omit(excludes as any) as unknown as RecordSet<Partial<TRecord>>;
+    return new RecordSet(select({ spec, records: this.records }));
   }
 
   /**
@@ -673,9 +545,7 @@ export class RecordSet<TRecord> implements RecordSetApi<TRecord> {
   public sort(
     compareFn: (a: TRecord, b: TRecord) => number
   ): RecordSet<TRecord> {
-    return new RecordSet(
-      ([] as Array<TRecord>).concat(this.records).sort(compareFn)
-    );
+    return new RecordSet(sort({ compareFn, records: this.records }));
   }
 
   /**
@@ -713,24 +583,7 @@ export class RecordSet<TRecord> implements RecordSetApi<TRecord> {
     iteratees: Array<keyof TRecord> | keyof TRecord,
     orders?: Array<'asc' | 'desc'> | 'asc' | 'desc'
   ): RecordSet<TRecord> {
-    const keys = Array.isArray(iteratees)
-      ? iteratees.map(String)
-      : [String(iteratees)];
-
-    const ords =
-      orders === undefined
-        ? keys.map(() => 'asc')
-        : Array.isArray(orders)
-        ? orders
-        : [orders];
-
-    const sorted = orderBy(
-      this.records,
-      keys as (keyof TRecord & string)[],
-      ords as Array<'asc' | 'desc'>
-    );
-
-    return new RecordSet(sorted);
+    return new RecordSet(sortBy({ iteratees, orders, records: this.records }));
   }
 
   /**
@@ -759,25 +612,14 @@ export class RecordSet<TRecord> implements RecordSetApi<TRecord> {
   public groupBy<TKey>(
     fn: (record: TRecord) => TKey
   ): Map<TKey, RecordSet<TRecord>> {
-    const map = new Map<TKey, Array<TRecord>>();
-
-    for (const record of this.records) {
-      const key = fn(record);
-
-      const group = map.get(key);
-
-      if (group) {
-        group.push(record);
-      } else {
-        map.set(key, [record]);
-      }
-    }
+    const map = groupBy({ keyExtractor: fn, records: this.records });
 
     const recordSetMap = new Map<TKey, RecordSet<TRecord>>();
 
     for (const [key, groupRecords] of map) {
       recordSetMap.set(key, new RecordSet(groupRecords));
     }
+
     return recordSetMap;
   }
 
@@ -805,6 +647,6 @@ export class RecordSet<TRecord> implements RecordSetApi<TRecord> {
    * // ]
    */
   public reverse(): RecordSet<TRecord> {
-    return new RecordSet(([] as Array<TRecord>).concat(this.records).reverse());
+    return new RecordSet(reverse({ records: this.records }));
   }
 }
