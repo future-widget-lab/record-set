@@ -57,7 +57,6 @@ export type RecordSetApi<TRecord> = {
    * and page size.
    */
   page: (pageNumber: number, pageSize: number) => RecordSetApi<TRecord>;
-
   /**
    * @method
    * @description
@@ -97,9 +96,15 @@ export type RecordSetApi<TRecord> = {
   /**
    * @method
    * @description
-   * Use this method to check if any record exists matching the query.
+   * Use this method to check if any record exists matching a given query.
    */
   exists: (query?: SiftQuery<TRecord>) => boolean;
+  /**
+   * @method
+   * @description
+   * Use this method to check if every record matches the given query.
+   */
+  every: (query?: SiftQuery<TRecord>) => boolean;
   /**
    * @method
    * @description

@@ -1,21 +1,21 @@
 import sift from 'sift';
 import type { Query } from 'sift';
 
-type ExistsOptions<TRecord> = {
+type EveryOptions<TRecord> = {
   query?: Query<TRecord>;
   records: Array<TRecord>;
 };
 
 /**
  * @description
- * Use this method to check if any record exists matching the given query.
+ * Use this method to check if every record matches the given query.
  */
-export const exists = <TRecord>(options: ExistsOptions<TRecord>): boolean => {
+export const every = <TRecord>(options: EveryOptions<TRecord>): boolean => {
   const { query, records } = options;
 
   if (!query) {
     return records.length > 0;
   }
 
-  return records.some(sift(query));
+  return records.every(sift(query));
 };
