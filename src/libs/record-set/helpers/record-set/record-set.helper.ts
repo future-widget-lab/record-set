@@ -34,6 +34,10 @@ export class RecordSet<TRecord> implements RecordSetApi<TRecord> {
     return new RecordSet(records);
   }
 
+  static empty<TRecord>(): RecordSet<TRecord> {
+    return new RecordSet<TRecord>();
+  }
+
   private constructor(records: Array<TRecord> = []) {
     if (!Array.isArray(records)) {
       throw new Error(
