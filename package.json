@@ -55,7 +55,6 @@
     "@size-limit/preset-small-lib": "^11.2.0",
     "@tsconfig/recommended": "^1.0.8",
     "@types/jest": "^29.5.14",
-    "@types/lodash.orderby": "^4.6.9",
     "dts-cli": "^2.0.5",
     "husky": "^9.1.7",
     "size-limit": "^11.2.0",
@@ -63,7 +62,6 @@
     "typescript": "^5.8.3"
   },
   "dependencies": {
-    "lodash.orderby": "^4.6.0",
     "mingo": "^6.6.1",
     "sift": "^17.1.3"
   }
