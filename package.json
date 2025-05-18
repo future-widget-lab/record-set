@@ -1,7 +1,7 @@
 {
   "name": "@future-widget-lab/record-set",
   "version": "0.1.0",
-  "description": "A lightweight helper class for managing and querying in-memory record set using MongoDB-like filters with `sift`.",
+  "description": "A fluent, immutable API for filtering, sorting, and transforming in-memory record sets.",
   "license": "MIT",
   "author": "Carlos Lobo",
   "main": "dist/index.js",
