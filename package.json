@@ -56,7 +56,6 @@
     "@tsconfig/recommended": "^1.0.8",
     "@types/jest": "^29.5.14",
     "@types/lodash.orderby": "^4.6.9",
-    "@types/lodash.uniqby": "^4.7.9",
     "dts-cli": "^2.0.5",
     "husky": "^9.1.7",
     "size-limit": "^11.2.0",
@@ -65,7 +64,6 @@
   },
   "dependencies": {
     "lodash.orderby": "^4.6.0",
-    "lodash.uniqby": "^4.7.0",
     "mingo": "^6.6.1",
     "sift": "^17.1.3"
   }

@@ -23,11 +23,11 @@ type FindOptions<TRecord> = {
  *
  * // Find all people named 'Bob'
  * const bobs = people.find({ name: 'Bob' });
- * console.log(bobs.toArray()); // [{ id: 2, name: 'Bob', age: 25 }]
+ * console.log(bobs.all()); // [{ id: 2, name: 'Bob', age: 25 }]
  *
  * // Calling find without a query returns the full record set
  * const all = people.find();
- * console.log(all.toArray()); // same as people.toArray()
+ * console.log(all.all()); // same as people.all()
  */
 export const find = <TRecord>(
   options: FindOptions<TRecord>
