@@ -1,4 +1,7 @@
-import type { Query } from 'sift';
+import type { Query as SiftQuery } from 'sift';
+import { Cursor } from 'mingo/dist/types/cursor';
+import { AnyObject } from 'mingo/dist/types/types';
+import { Options } from 'mingo/dist/types/core';
 
 /**
  * @description
@@ -16,7 +19,7 @@ export type RecordSetApi<TRecord> = {
    * @description
    * Use this method to get a shallow-copied array of all records in the record set.
    */
-  toArray: () => Array<TRecord>;
+  all: () => Array<TRecord>;
   /**
    * @method
    * @description
@@ -74,7 +77,7 @@ export type RecordSetApi<TRecord> = {
    *
    * Fallsback to the the same set of items if no `query` is provided.
    */
-  find: (query: Query<TRecord>) => RecordSetApi<TRecord>;
+  find: (query: SiftQuery<TRecord>) => RecordSetApi<TRecord>;
   /**
    * @method
    * @description
@@ -84,25 +87,25 @@ export type RecordSetApi<TRecord> = {
    *
    * Fallbacks to `null` if the query provided does not return any matches.
    */
-  findOne: (query?: Query<TRecord>) => TRecord | null;
+  findOne: (query?: SiftQuery<TRecord>) => TRecord | null;
   /**
    * @method
    * @description
    * Use this method to count the number of records matching the query.
    */
-  count: (query?: Query<TRecord>) => number;
+  count: (query?: SiftQuery<TRecord>) => number;
   /**
    * @method
    * @description
    * Use this method to check if any record exists matching the query.
    */
-  exists: (query?: Query<TRecord>) => boolean;
+  exists: (query?: SiftQuery<TRecord>) => boolean;
   /**
    * @method
    * @description
    * Use this method to get distinct values of a field among records matching the query.
    */
-  distinct: (field: keyof TRecord, query?: Query<TRecord>) => Array<any>;
+  distinct: (field: keyof TRecord, query?: SiftQuery<TRecord>) => Array<any>;
   /**
    * @method
    * @description
@@ -181,4 +184,14 @@ export type RecordSetApi<TRecord> = {
    * Use this method to sort the records by key(s) using lodash orderBy.
    */
   reverse: () => RecordSetApi<TRecord>;
+  /**
+   * @method
+   * @description
+   * Use this helper to create a custom query using the provided condition and options.
+   *
+   * This method returns a `mingo` [Cursor](https://www.npmjs.com/package/mingo), which allows you to further refine and chain query operations as needed.
+   *
+   * Note: Queries are lazily evaluated. Meaning that only when `.all()`, `.next()`, or similar methods are invoked the operations are ran.
+   */
+  query(condition: AnyObject, options?: Partial<Options>): Cursor<TRecord>;
 };

@@ -1,4 +1,8 @@
-import type { Query } from 'sift';
+import type { Query as SiftQuery } from 'sift';
+import { Query as MingoQuery } from 'mingo';
+import { Cursor } from 'mingo/dist/types/cursor';
+import { AnyObject } from 'mingo/dist/types/types';
+import { Options } from 'mingo/dist/types/core';
 import { RecordSetApi } from '../../types/record-set.type';
 import { at } from '../at/at.helper';
 import { first } from '../first/first.helper';
@@ -38,7 +42,7 @@ export class RecordSet<TRecord> implements RecordSetApi<TRecord> {
     }
 
     this.records = records || [];
-    this.toArray = this.toArray.bind(this);
+    this.all = this.all.bind(this);
     this.at = this.at.bind(this);
     this.first = this.first.bind(this);
     this.last = this.last.bind(this);
@@ -77,9 +81,9 @@ export class RecordSet<TRecord> implements RecordSetApi<TRecord> {
    * @example
    * const record = RecordSet.of([{ id: 1 }, { id: 2 }]);
    *
-   * record.toArray(); // [{ id: 1 }, { id: 2 }]
+   * record.all(); // [{ id: 1 }, { id: 2 }]
    */
-  public toArray(): Array<TRecord> {
+  public all(): Array<TRecord> {
     return ([] as Array<TRecord>).concat(this.records);
   }
 
@@ -141,7 +145,7 @@ export class RecordSet<TRecord> implements RecordSetApi<TRecord> {
    *
    * const skipped = records.skip(2);
    *
-   * console.log(skipped.toArray()); // [3, 4, 5]
+   * console.log(skipped.all()); // [3, 4, 5]
    */
   public skip(count: number): RecordSet<TRecord> {
     return new RecordSet(skip({ count, records: this.records }));
@@ -156,7 +160,7 @@ export class RecordSet<TRecord> implements RecordSetApi<TRecord> {
    * const records = RecordSet.of([1, 2, 3, 4, 5]);
    *
    * const limited = records.limit(3);
-   * console.log(limited.toArray()); // [1, 2, 3]
+   * console.log(limited.all()); // [1, 2, 3]
    */
   public limit(count: number): RecordSet<TRecord> {
     return new RecordSet(limit({ count, records: this.records }));
@@ -175,10 +179,10 @@ export class RecordSet<TRecord> implements RecordSetApi<TRecord> {
    * const records = RecordSet.of([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
    *
    * const firstPage = records.page(1, 3);
-   * console.log(firstPage.toArray()); // [1, 2, 3]
+   * console.log(firstPage.all()); // [1, 2, 3]
    *
    * const secondPage = records.page(2, 3);
-   * console.log(secondPage.toArray()); // [4, 5, 6]
+   * console.log(secondPage.all()); // [4, 5, 6]
    */
   public page(pageNumber: number, pageSize: number): RecordSet<TRecord> {
     return new RecordSet(page({ pageNumber, pageSize, records: this.records }));
@@ -230,13 +234,13 @@ export class RecordSet<TRecord> implements RecordSetApi<TRecord> {
    *
    * // Find all people named 'Bob'
    * const bobs = people.find({ name: 'Bob' });
-   * console.log(bobs.toArray()); // [{ id: 2, name: 'Bob', age: 25 }]
+   * console.log(bobs.all()); // [{ id: 2, name: 'Bob', age: 25 }]
    *
    * // Calling find without a query returns the full record set
    * const all = people.find();
-   * console.log(all.toArray()); // same as people.toArray()
+   * console.log(all.all()); // same as people.all()
    */
-  public find(query?: Query<TRecord>): RecordSet<TRecord> {
+  public find(query?: SiftQuery<TRecord>): RecordSet<TRecord> {
     return RecordSet.of(find({ query, records: this.records }));
   }
 
@@ -266,7 +270,7 @@ export class RecordSet<TRecord> implements RecordSetApi<TRecord> {
    * const firstPerson = people.findOne();
    * console.log(firstPerson); // { id: 1, name: 'Alice', age: 30 }
    */
-  public findOne(query?: Query<TRecord>): TRecord | null {
+  public findOne(query?: SiftQuery<TRecord>): TRecord | null {
     return findOne({ query, records: this.records });
   }
 
@@ -290,7 +294,7 @@ export class RecordSet<TRecord> implements RecordSetApi<TRecord> {
    * const totalCount = items.count();
    * console.log(totalCount); // 3
    */
-  public count(query?: Query<TRecord>): number {
+  public count(query?: SiftQuery<TRecord>): number {
     return count({ query, records: this.records });
   }
 
@@ -315,7 +319,7 @@ export class RecordSet<TRecord> implements RecordSetApi<TRecord> {
    * const hasAny = items.exists();
    * console.log(hasAny); // true, because record set is not empty
    */
-  public exists(query?: Query<TRecord>): boolean {
+  public exists(query?: SiftQuery<TRecord>): boolean {
     return exists({ query, records: this.records });
   }
 
@@ -339,7 +343,10 @@ export class RecordSet<TRecord> implements RecordSetApi<TRecord> {
    * const fruitNames = products.distinct('name', { category: 'fruit' });
    * console.log(fruitNames); // ['apple', 'banana']
    */
-  public distinct(field: keyof TRecord, query?: Query<TRecord>): Array<any> {
+  public distinct(
+    field: keyof TRecord,
+    query?: SiftQuery<TRecord>
+  ): Array<any> {
     return distinct({ field, query, records: this.records });
   }
 
@@ -361,7 +368,7 @@ export class RecordSet<TRecord> implements RecordSetApi<TRecord> {
    *   return user.name;
    * });
    *
-   * console.log(userNames.toArray()); // ['Alice', 'Bob']
+   * console.log(userNames.all()); // ['Alice', 'Bob']
    */
   public map<TMappedRecord>(
     fn: (record: TRecord) => TMappedRecord
@@ -390,7 +397,7 @@ export class RecordSet<TRecord> implements RecordSetApi<TRecord> {
    *   return post.comments;
    * });
    *
-   * comments.toArray(); // [{ id: 101, text: 'a' }, { id: 102, text: 'b' }, { id: 103, text: 'c' }]
+   * comments.all(); // [{ id: 101, text: 'a' }, { id: 102, text: 'b' }, { id: 103, text: 'c' }]
    */
   public flatMap<TMappedRecord>(
     fn: (record: TRecord) => Array<TMappedRecord>
@@ -463,7 +470,7 @@ export class RecordSet<TRecord> implements RecordSetApi<TRecord> {
    * // Pick only id and name fields
    * const userSummaries = users.pick(['id', 'name']);
    *
-   * console.log(userSummaries.toArray()); // [{ id: 1, name: 'Alice' }, { id: 2, name: 'Bob' }]
+   * console.log(userSummaries.all()); // [{ id: 1, name: 'Alice' }, { id: 2, name: 'Bob' }]
    */
   public pick<TKey extends keyof TRecord>(
     fields: Array<TKey>
@@ -487,7 +494,7 @@ export class RecordSet<TRecord> implements RecordSetApi<TRecord> {
    * // Omit the password field for security reasons
    * const safeUsers = users.omit(['password']);
    *
-   * console.log(safeUsers.toArray());
+   * console.log(safeUsers.all());
    * // [{ id: 1, name: 'Alice', age: 30 }, { id: 2, name: 'Bob', age: 25 }]
    */
   public omit<TKey extends keyof TRecord>(
@@ -511,9 +518,9 @@ export class RecordSet<TRecord> implements RecordSetApi<TRecord> {
    * @example
    * const users = RecordSet.of([{ id:1, name:'A', age:30 }]);
    *
-   * users.select('id name').toArray(); // [{ id: 1, name: 'A' }]
+   * users.select('id name').all(); // [{ id: 1, name: 'A' }]
    *
-   * users.select('-age').toArray();    // [{ id: 1, name: 'A' }]
+   * users.select('-age').all();    // [{ id: 1, name: 'A' }]
    */
   public select(
     spec: string | string[] | Record<string, 0 | 1>
@@ -572,7 +579,7 @@ export class RecordSet<TRecord> implements RecordSetApi<TRecord> {
    *
    * // Sort by category ascending, then price descending
    * const sortedByCategoryPrice = products.sortBy(['category', 'price'], ['asc', 'desc']);
-   * console.log(sortedByCategoryPrice.toArray());
+   * console.log(sortedByCategoryPrice.all());
    * // [
    * //   { category: 'fruit', price: 5 },
    * //   { category: 'fruit', price: 3 },
@@ -605,9 +612,9 @@ export class RecordSet<TRecord> implements RecordSetApi<TRecord> {
    *    return person.age;
    * });
    *
-   * grouped.get(25)?.toArray(); // [{ id: 2, name: 'Bob', age: 25 }, { id: 3, name: 'Eve', age: 25 }]
+   * grouped.get(25)?.all(); // [{ id: 2, name: 'Bob', age: 25 }, { id: 3, name: 'Eve', age: 25 }]
    *
-   * grouped.get(30)?.toArray(); // [{ id: 1, name: 'Alice', age: 30 }]
+   * grouped.get(30)?.all(); // [{ id: 1, name: 'Alice', age: 30 }]
    */
   public groupBy<TKey>(
     fn: (record: TRecord) => TKey
@@ -639,7 +646,7 @@ export class RecordSet<TRecord> implements RecordSetApi<TRecord> {
    *
    * const reversed = items.reverse();
    *
-   * console.log(reversed.toArray());
+   * console.log(reversed.all());
    * // [
    * //   { id: 3, name: 'Third' },
    * //   { id: 2, name: 'Second' },
@@ -648,5 +655,21 @@ export class RecordSet<TRecord> implements RecordSetApi<TRecord> {
    */
   public reverse(): RecordSet<TRecord> {
     return new RecordSet(reverse({ records: this.records }));
+  }
+
+  /**
+   * @method
+   * @description
+   * Use this helper to create a custom query using the provided condition and options.
+   *
+   * This method returns a `mingo` [Cursor](https://www.npmjs.com/package/mingo), which allows you to further refine and chain query operations as needed.
+   *
+   * Note: Queries are lazily evaluated. Meaning that only when `.all()`, `.next()`, or similar methods are invoked the operations are ran.
+   */
+  public query(
+    condition: AnyObject,
+    options?: Partial<Options>
+  ): Cursor<TRecord> {
+    return new MingoQuery(condition, options).find<TRecord>(this.records);
   }
 }

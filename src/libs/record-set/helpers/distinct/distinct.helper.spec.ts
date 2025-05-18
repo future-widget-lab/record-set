@@ -19,18 +19,16 @@ describe('Unit | Helper | distinct', () => {
   });
 
   it('should return distinct values correctly using distinct', () => {
-    const expectedNames = ['Alice', 'Bob', 'Eve'].sort();
-    const actualNames = distinct({ field: 'name', records }).sort();
+    let expected = ['Alice', 'Bob', 'Eve'];
+    let actual = distinct({ field: 'name', records });
 
-    expect(actualNames).toEqual(expectedNames);
+    expect(actual).toEqual(expected);
 
-    const expectedAges = [25, 40].sort();
-    const actualAges = distinct({
-      field: 'age',
-      query: { name: 'Bob' },
-      records,
-    }).sort();
+    // @ts-expect-error
+    expected = [25, 40];
 
-    expect(actualAges).toEqual(expectedAges);
+    actual = distinct({ field: 'age', query: { name: 'Bob' }, records });
+
+    expect(actual).toEqual(expected);
   });
 });

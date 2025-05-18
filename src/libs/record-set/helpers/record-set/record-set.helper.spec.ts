@@ -23,7 +23,7 @@ describe('Unit | Integration | RecordSet', () => {
     expect(records.isEmpty()).toBeTruthy();
 
     const expectedArray: Array<Person> = [];
-    const actualArray = records.toArray();
+    const actualArray = records.all();
     expect(actualArray).toEqual(expectedArray);
   });
 
@@ -35,10 +35,10 @@ describe('Unit | Integration | RecordSet', () => {
     );
   });
 
-  it('should return a shallow copy using toArray', () => {
+  it('should return a shallow copy using all', () => {
     const records = RecordSet.of(data);
-    const arr1 = records.toArray();
-    const arr2 = records.toArray();
+    const arr1 = records.all();
+    const arr2 = records.all();
 
     const expected = data;
     expect(arr1).toEqual(expected);
@@ -61,11 +61,11 @@ describe('Unit | Integration | RecordSet', () => {
       return p.name;
     });
 
-    expect(grouped.get('Bob')?.toArray()).toEqual([
+    expect(grouped.get('Bob')?.all()).toEqual([
       { id: 2, name: 'Bob', age: 25 },
       { id: 4, name: 'Bob', age: 40 },
     ]);
-    expect(grouped.get('Alice')?.toArray()).toEqual([
+    expect(grouped.get('Alice')?.all()).toEqual([
       { id: 1, name: 'Alice', age: 30 },
     ]);
   });
