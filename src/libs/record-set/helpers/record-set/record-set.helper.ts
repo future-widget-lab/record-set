@@ -28,6 +28,7 @@ import { groupBy } from '../group-by/group-by.helper';
 import { reverse } from '../reverse/reverse.helper';
 import { every } from '../every/every.helper';
 import { none } from '../none/none.helper';
+import { slice } from '../slice/slice.helper';
 
 export class RecordSet<TRecord> implements RecordSetApi<TRecord> {
   private readonly records: Array<TRecord>;
@@ -449,6 +450,28 @@ export class RecordSet<TRecord> implements RecordSetApi<TRecord> {
     fn: (record: TRecord) => Array<TMappedRecord>
   ): RecordSet<TMappedRecord> {
     return new RecordSet(flatMap({ transformer: fn, records: this.records }));
+  }
+
+  /**
+   * @method
+   * @description
+   * Use this method to create a shallow copy slice of the records in the record set, extracting records from the specified `start` index up to, but not including, the `end` index.
+   *
+   * It operates on the current set of records without applying any filtering.
+   *
+   * For filtering, use `.find()` prior to `.slice()`.
+   *
+   * @example
+   * const records = RecordSet.of([1, 2, 3, 4, 5]);
+   *
+   * const sliced = records.slice(1, 3);
+   * sliced.all(); // [2, 3]
+   *
+   * const slicedFromEnd = records.slice(-3, -1);
+   * slicedFromEnd.all(); // [3, 4]
+   */
+  public slice(start: number, end?: number): RecordSet<TRecord> {
+    return new RecordSet(slice({ start, end, records: this.records }));
   }
 
   /**
