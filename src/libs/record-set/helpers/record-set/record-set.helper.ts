@@ -3,7 +3,6 @@ import { Query as MingoQuery } from 'mingo';
 import { Cursor } from 'mingo/dist/types/cursor';
 import { AnyObject } from 'mingo/dist/types/types';
 import { Options } from 'mingo/dist/types/core';
-import { RecordSetApi } from '../../types/record-set.type';
 import { at } from '../at/at.helper';
 import { first } from '../first/first.helper';
 import { last } from '../last/last.helper';
@@ -30,10 +29,13 @@ import { every } from '../every/every.helper';
 import { none } from '../none/none.helper';
 import { slice } from '../slice/slice.helper';
 import { findIndex } from '../find-index/find-index.helper';
+import { add } from '../add/add.helper';
+import { update } from '../update/update.helper';
+import { updateOne } from '../update-one/update-one.helper';
+import { remove } from '../remove/remove.helper';
+import { removeOne } from '../remove-one/remove-one.helper';
 
-export class RecordSet<TRecord extends object>
-  implements RecordSetApi<TRecord>
-{
+export class RecordSet<TRecord extends object> {
   private readonly records: Array<TRecord>;
 
   static of<TRecord extends object>(
@@ -729,11 +731,11 @@ export class RecordSet<TRecord extends object>
    * ]);
    *
    * // Sort products by price ascending
-   * const sortedProducts = products.sort((a, b) => {
+   * const sorted = products.sort((a, b) => {
    *   return a.price - b.price;
    * });
    *
-   * console.log(sortedProducts.pluck('price')); // [1.2, 1.5, 2.0]
+   * console.log(sorted.pluck('price')); // [1.2, 1.5, 2.0]
    */
   public sort(
     compareFn: (a: TRecord, b: TRecord) => number
@@ -865,5 +867,221 @@ export class RecordSet<TRecord extends object>
     options?: Partial<Options>
   ): Cursor<TRecord> {
     return new MingoQuery(condition, options).find<TRecord>(this.records);
+  }
+
+  /**
+   * @method
+   * @description
+   * Use this method to add one or more records to the record set at the specified index.
+   *
+   * The insertion index is zero-based. If omitted or out of bounds, new records are appended at the end.
+   *
+   * @param records A record or an array of records to add.
+   * @param index Optional zero-based index at which to insert the new records.
+   *
+   * @example
+   * const items = RecordSet.of([{ id: 1 }, { id: 2 }, { id: 3 }]);
+   *
+   * // Insert at index 1
+   * const updated = items.add({ id: 99 }, 1);
+   *
+   * console.log(updated.all()); // [{ id: 1 }, { id: 99 }, { id: 2 }, { id: 3 }]
+   *
+   * // Append by default
+   * const appended = items.add([{ id: 4 }, { id: 5 }]);
+   *
+   * console.log(appended.all()); // [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }, { id: 5 }]
+   */
+  public add(
+    records: TRecord | Array<TRecord>,
+    index?: number
+  ): RecordSet<TRecord> {
+    return new RecordSet(
+      add({
+        newRecords: records,
+        index,
+        records: this.records,
+      })
+    );
+  }
+
+  /**
+   * @method
+   * @description
+   * Use this method to add one or more records to the record set at the beggining of the record set.
+   *
+   * @param records A record or an array of records to add.
+   *
+   * @example
+   * const items = RecordSet.of([{ id: 1 }, { id: 2 }, { id: 3 }]);
+   *
+   * const prepended = items.prepend([{ id: 4 }, { id: 5 }]);
+   *
+   * console.log(prepended.all()); // [{ id: 4 }, { id: 5 }, { id: 1 }, { id: 2 }, { id: 3 }]
+   */
+  public prepend(records: TRecord | Array<TRecord>): RecordSet<TRecord> {
+    return new RecordSet(
+      add({
+        newRecords: records,
+        index: 0,
+        records: this.records,
+      })
+    );
+  }
+
+  /**
+   * @method
+   * @description
+   * Use this method to add one or more records to the record set at the end of the record set.
+   *
+   * @param records A record or an array of records to add.
+   *
+   * @example
+   * const items = RecordSet.of([{ id: 1 }, { id: 2 }, { id: 3 }]);
+   *
+   * const appended = items.append([{ id: 4 }, { id: 5 }]);
+   *
+   * console.log(appended.all()); // [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }, { id: 5 }]
+   */
+  public append(records: TRecord | Array<TRecord>): RecordSet<TRecord> {
+    return new RecordSet(
+      add({
+        newRecords: records,
+        records: this.records,
+      })
+    );
+  }
+
+  /**
+   * @method
+   * @description
+   * Use this method to update records in the record set matching the given query by merging the provided update object.
+   *
+   * Performs a shallow merge of the update object into matching records.
+   *
+   * @param query The query that should be used to determine to match the records.
+   * @param changes The partial object with fields to update in matching records.
+   *
+   * @example
+   * const users = RecordSet.of([
+   *   { id: 1, name: 'Alice', age: 30 },
+   *   { id: 2, name: 'Bob', age: 25 },
+   *   { id: 3, name: 'Eve', age: 25 },
+   * ]);
+   *
+   * const updated = users.update({ age: 25 }, { age: 26 });
+   *
+   * console.log(updated.all());
+   * // [
+   * //   { id: 1, name: 'Alice', age: 30 },
+   * //   { id: 2, name: 'Bob', age: 26 },
+   * //   { id: 3, name: 'Eve', age: 26 }
+   * // ]
+   */
+  public update(
+    query: SiftQuery<TRecord>,
+    changes: Partial<TRecord>
+  ): RecordSet<TRecord> {
+    return new RecordSet(update({ query, changes, records: this.records }));
+  }
+
+  /**
+   * @method
+   * @description
+   * Use this method to update the first record in the record set matching the given query by merging the provided update object.
+   *
+   * Performs a shallow merge of the update object into the first matching record.
+   *
+   * @param query The query that should be used to determine to match the record.
+   * @param update The partial object with fields to update in matching records.
+   *
+   * @example
+   * const users = RecordSet.of([
+   *   { id: 1, name: 'Alice', age: 30 },
+   *   { id: 2, name: 'Bob', age: 25 },
+   *   { id: 3, name: 'Eve', age: 25 },
+   * ]);
+   *
+   * const updated = users.updateOne({ age: 25 }, { age: 26 });
+   *
+   * console.log(updated.all());
+   * // [
+   * //   { id: 1, name: 'Alice', age: 30 },
+   * //   { id: 2, name: 'Bob', age: 26 },  // Only first matched record updated
+   * //   { id: 3, name: 'Eve', age: 25 }
+   * // ]
+   */
+  public updateOne(
+    query: SiftQuery<TRecord>,
+    changes: Partial<TRecord>
+  ): RecordSet<TRecord> {
+    return new RecordSet(updateOne({ query, changes, records: this.records }));
+  }
+
+  /**
+   * @method
+   * @description
+   * Use this method to remove all records from the record set that match the given query.
+   *
+   * @param query The query that should be used to determine to match the records.
+   *
+   * @example
+   * const items = RecordSet.of([
+   *   { id: 1, name: 'Apple' },
+   *   { id: 2, name: 'Banana' },
+   *   { id: 3, name: 'Banana' },
+   *   { id: 4, name: 'Cherry' },
+   * ]);
+   *
+   * // Remove all items with name 'Banana'
+   * const updated = items.remove({ name: 'Banana' });
+   *
+   * console.log(updated.all());
+   * // [
+   * //   { id: 1, name: 'Apple' },
+   * //   { id: 4, name: 'Cherry' }
+   * // ]
+   */
+  public remove(query: SiftQuery<TRecord>): RecordSet<TRecord> {
+    return new RecordSet(
+      remove({
+        query,
+        records: this.records,
+      })
+    );
+  }
+
+  /**
+   * @method
+   * @description
+   * Use this method to remove the first record from the record set that matches the given query.
+   *
+   * @param query The query that should be used to determine to match the records.
+   *
+   * @example
+   * const items = RecordSet.of([
+   *   { id: 1, name: 'Apple' },
+   *   { id: 2, name: 'Banana' },
+   *   { id: 3, name: 'Banana' },
+   *   { id: 4, name: 'Cherry' },
+   * ]);
+   *
+   * // Remove the first item with name 'Banana'
+   * const updated = items.removeOne({ name: 'Banana' });
+   *
+   * console.log(updated.all());
+   * // [
+   * //   { id: 1, name: 'Apple' },
+   * //   { id: 3, name: 'Banana' },
+   * //   { id: 4, name: 'Cherry' }
+   * // ]
+   */
+  public removeOne(query: SiftQuery<TRecord>): RecordSet<TRecord> {
+    return new RecordSet(
+      removeOne({
+        query,
+        records: this.records,
+      })
+    );
   }
 }
