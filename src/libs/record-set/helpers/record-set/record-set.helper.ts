@@ -81,7 +81,9 @@ export class RecordSet<TRecord extends object> {
    * Use this method to get a shallow-copied array of all records in the record set.
    *
    * @example
-   * const record = RecordSet.of([{ id: 1 }, { id: 2 }]);
+   * type Item = { id: number };
+   *
+   * const record = RecordSet.of<Item>([{ id: 1 }, { id: 2 }]);
    *
    * record.all(); // [{ id: 1 }, { id: 2 }]
    */
@@ -97,7 +99,9 @@ export class RecordSet<TRecord extends object> {
    * @param index The zero-based index of the desired code unit. A negative index will count back from the last item.
    *
    * @example
-   * const record = RecordSet.of([{ id: 1 }, { id: 2 }]);
+   * type Item = { id: number };
+   *
+   * const record = RecordSet.of<Type>([{ id: 1 }, { id: 2 }]);
    *
    * record.at(0); // { id: 1 }
    *
@@ -113,7 +117,9 @@ export class RecordSet<TRecord extends object> {
    * Use this method to get the first record in the record set, or null if the record set is empty.
    *
    * @example
-   * const record = RecordSet.of([{ id: 1 }, { id: 2 }]);
+   * type Item = { id: number };
+   *
+   * const record = RecordSet.of<Item>([{ id: 1 }, { id: 2 }]);
    *
    * record.first(); // { id: 1 }
    *
@@ -129,7 +135,9 @@ export class RecordSet<TRecord extends object> {
    * Use this method to get the last record in the record set, or null if the record set is empty.
    *
    * @example
-   * const record = RecordSet.of([{ id: 1 }, { id: 2 }]);
+   * type Item = { id: number };
+   *
+   * const record = RecordSet.of<Item>([{ id: 1 }, { id: 2 }]);
    *
    * record.last(); // { id: 2 }
    *
@@ -147,7 +155,9 @@ export class RecordSet<TRecord extends object> {
    * @param count The number of records that should be skipped.
    *
    * @example
-   * const records = RecordSet.of([{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }, { id: 5 }]);
+   * type Item = { id: number };
+   *
+   * const records = RecordSet.of<Item>([{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }, { id: 5 }]);
    *
    * const skipped = records.skip(2);
    *
@@ -165,7 +175,9 @@ export class RecordSet<TRecord extends object> {
    * @param count The max. number of records the record set should hold.
    *
    * @example
-   * const records = RecordSet.of([{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }, { id: 5 }]);
+   * type Item = { id: number };
+   *
+   * const records = RecordSet.of<Item>([{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }, { id: 5 }]);
    *
    * const limited = records.limit(3);
    * console.log(limited.all()); // [{ id: 1 }, { id: 2 }, { id: 3 }]
@@ -187,7 +199,9 @@ export class RecordSet<TRecord extends object> {
    * @param pageSize The number of records per page.
    *
    * @example
-   * const records = RecordSet.of([
+   * type Item = { id: number };
+   *
+   * const records = RecordSet.of<Item>([
    *   { id: 1 },
    *   { id: 2 },
    *   { id: 3 },
@@ -216,7 +230,9 @@ export class RecordSet<TRecord extends object> {
    * Use this method to get the number of records in the record set.
    *
    * @example
-   * const record = RecordSet.of([{ id: 1 }, { id: 2 }, { id: 3 }]);
+   * type Item = { id: number };
+   *
+   * const record = RecordSet.of<Item>([{ id: 1 }, { id: 2 }, { id: 3 }]);
    *
    * record.length(); // 3
    */
@@ -458,6 +474,8 @@ export class RecordSet<TRecord extends object> {
    * @param fn The function to execute on each element, receiving the record, the index, and the original array.
    *
    * @example
+   * type Item = { id: number };
+   *
    * const records = RecordSet.of([{ id: 1 }, { id: 2 }, { id: 3 }]);
    *
    * records.forEach((record, index) => {
@@ -532,7 +550,7 @@ export class RecordSet<TRecord extends object> {
   /**
    * @method
    * @description
-   * Use this method to create a shallow copy slice of the records in the record set, extracting records from the specified `start` index up to, but not including, the `end` index.
+   * Use this method to create a shallow copy slice of the records in the record set, extracting records from the specified range.
    *
    * It operates on the current set of records without applying any filtering.
    *
@@ -544,13 +562,19 @@ export class RecordSet<TRecord extends object> {
    * If end is undefined, then the slice extends to the end of the array.
    *
    * @example
-   * const records = RecordSet.of([1, 2, 3, 4, 5]);
+   * type Person = { id: number; name: string; age: number };
    *
-   * const sliced = records.slice(1, 3);
-   * sliced.all(); // [2, 3]
+   * const records = RecordSet.of<Person>([
+   *   { id: 1, name: 'Alice', age: 30 },
+   *   { id: 2, name: 'Bob', age: 25 },
+   *   { id: 3, name: 'Eve', age: 35 },
+   * ]);
    *
-   * const slicedFromEnd = records.slice(-3, -1);
-   * slicedFromEnd.all(); // [3, 4]
+   * const sliced = records.slice({ start: 1, end: 3 });
+   * sliced.all(); // [{ id: 2, name: 'Bob', age: 25 }, { id: 3, name: 'Eve', age: 35 }]
+   *
+   * const slicedFromEnd = records.slice({ start: -3, end: -1 });
+   * slicedFromEnd.all(); // [{ id: 1, name: 'Alice', age: 30 }, { id: 2, name: 'Bob', age: 25 }]
    */
   public slice(start: number, end?: number): RecordSet<TRecord> {
     return new RecordSet(slice({ start, end, records: this.records }));
@@ -598,9 +622,11 @@ export class RecordSet<TRecord extends object> {
    * @returns A new `RecordSet<TRecord>` containing all records from both sets, in order.
    *
    * @example
-   * const set1 = RecordSet.of([{ id: 1 }, { id: 2 }]);
+   * type Item = { id: number };
    *
-   * const set2 = RecordSet.of([{ id: 3 }, { id: 4 }]);
+   * const set1 = RecordSet.of<Item>([{ id: 1 }, { id: 2 }]);
+   *
+   * const set2 = RecordSet.of<Item>([{ id: 3 }, { id: 4 }]);
    *
    * const combined = set1.concat(set2);
    *
@@ -717,7 +743,7 @@ export class RecordSet<TRecord extends object> {
   /**
    * @method
    * @description
-   * Use this method to sort the records with the provided compare function.
+   * Use this helper to sort the records with the provided compare function.
    *
    * @param sort The function used to determine the order of the elements. It is expected to return a negative value if the first argument is less than the second argument, zero if they're equal, and a positive value otherwise.
    *
@@ -746,7 +772,7 @@ export class RecordSet<TRecord extends object> {
   /**
    * @method
    * @description
-   * Use this method to sort the records by key(s) using lodash orderBy.
+   * Use this helper to sort the records by key(s) in ascending or descending order.
    *
    * @param iteratees One or more keys to sort by.
    * @param orders Order(s) for each key; can be a single 'asc' | 'desc' or an array corresponding to iteratees.
@@ -789,7 +815,7 @@ export class RecordSet<TRecord extends object> {
    * @description
    * Use this method to group records by a key derived from each record.
    *
-   * @fn The function that will serve as the key extractor. This function will be used to generate the keys in the resulting map.
+   * @param fn The function that will serve as the key extractor. This function will be used to generate the keys in the resulting map.
    *
    * It returns a `Map` where keys are group keys and values are record sets of grouped records.
    * @example
@@ -880,7 +906,9 @@ export class RecordSet<TRecord extends object> {
    * @param index Optional zero-based index at which to insert the new records.
    *
    * @example
-   * const items = RecordSet.of([{ id: 1 }, { id: 2 }, { id: 3 }]);
+   * type Item = { id: number };
+   *
+   * const items = RecordSet.of<Item>([{ id: 1 }, { id: 2 }, { id: 3 }]);
    *
    * // Insert at index 1
    * const updated = items.add({ id: 99 }, 1);
@@ -913,7 +941,9 @@ export class RecordSet<TRecord extends object> {
    * @param records A record or an array of records to add.
    *
    * @example
-   * const items = RecordSet.of([{ id: 1 }, { id: 2 }, { id: 3 }]);
+   * type Item = { id: number };
+   *
+   * const items = RecordSet.of<Item>([{ id: 1 }, { id: 2 }, { id: 3 }]);
    *
    * const prepended = items.prepend([{ id: 4 }, { id: 5 }]);
    *
@@ -937,7 +967,9 @@ export class RecordSet<TRecord extends object> {
    * @param records A record or an array of records to add.
    *
    * @example
-   * const items = RecordSet.of([{ id: 1 }, { id: 2 }, { id: 3 }]);
+   * type Item = { id: number };
+   *
+   * const items = RecordSet.of<Item>([{ id: 1 }, { id: 2 }, { id: 3 }]);
    *
    * const appended = items.append([{ id: 4 }, { id: 5 }]);
    *
@@ -963,7 +995,9 @@ export class RecordSet<TRecord extends object> {
    * @param changes The partial object with fields to update in matching records.
    *
    * @example
-   * const users = RecordSet.of([
+   * type User = { id: number; name: string; age: number };
+   *
+   * const users = RecordSet.of<User>([
    *   { id: 1, name: 'Alice', age: 30 },
    *   { id: 2, name: 'Bob', age: 25 },
    *   { id: 3, name: 'Eve', age: 25 },
@@ -996,7 +1030,9 @@ export class RecordSet<TRecord extends object> {
    * @param update The partial object with fields to update in matching records.
    *
    * @example
-   * const users = RecordSet.of([
+   * type User = { id: number; name: string; age: number };
+   *
+   * const users = RecordSet.of<User>([
    *   { id: 1, name: 'Alice', age: 30 },
    *   { id: 2, name: 'Bob', age: 25 },
    *   { id: 3, name: 'Eve', age: 25 },
@@ -1026,7 +1062,9 @@ export class RecordSet<TRecord extends object> {
    * @param query The query that should be used to determine to match the records.
    *
    * @example
-   * const items = RecordSet.of([
+   * type Product = { id: number; name: string; };
+   *
+   * const items = RecordSet.of<Product>([
    *   { id: 1, name: 'Apple' },
    *   { id: 2, name: 'Banana' },
    *   { id: 3, name: 'Banana' },
@@ -1059,7 +1097,9 @@ export class RecordSet<TRecord extends object> {
    * @param query The query that should be used to determine to match the records.
    *
    * @example
-   * const items = RecordSet.of([
+   * type Product = { id: number; name: string; };
+   *
+   * const items = RecordSet.of<Product>([
    *   { id: 1, name: 'Apple' },
    *   { id: 2, name: 'Banana' },
    *   { id: 3, name: 'Banana' },
