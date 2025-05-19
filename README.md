@@ -41,7 +41,7 @@ npm install @future-widget-lab/record-set
 
 #### `RecordSet.of`
 
-Use this static method to create an a record set from the given array..
+Use this static method to create a record set from the given array.
 
 ```typescript
 import { RecordSet } from '@future-widget-lab/record-set';
@@ -186,7 +186,7 @@ console.log(everyoneIsAboveFifteen); // true
 
 #### `RecordSet.prototype.none`
 
-Use this method to check if every record matches the given query.
+Use this method to check if none record matches the given query.
 
 ```typescript
 import { RecordSet } from '@future-widget-lab/record-set';

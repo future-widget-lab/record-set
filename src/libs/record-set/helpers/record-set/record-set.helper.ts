@@ -417,7 +417,7 @@ export class RecordSet<TRecord extends object> {
   /**
    * @method
    * @description
-   * Use this method to check if every record matches the given query.
+   * Use this method to check if none record matches the given query.
    *
    * @param query The query that should be used to determine to match the records.
    *
