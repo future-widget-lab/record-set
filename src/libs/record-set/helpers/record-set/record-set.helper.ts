@@ -53,31 +53,19 @@ export class RecordSet<TRecord extends object>
     }
 
     this.records = records || [];
-    this.all = this.all.bind(this);
-    this.at = this.at.bind(this);
-    this.first = this.first.bind(this);
-    this.last = this.last.bind(this);
-    this.skip = this.skip.bind(this);
-    this.limit = this.limit.bind(this);
-    this.page = this.page.bind(this);
-    this.length = this.length.bind(this);
-    this.isEmpty = this.isEmpty.bind(this);
-    this.find = this.find.bind(this);
-    this.findOne = this.findOne.bind(this);
-    this.count = this.count.bind(this);
-    this.exists = this.exists.bind(this);
-    this.distinct = this.distinct.bind(this);
-    this.map = this.map.bind(this);
-    this.reduce = this.reduce.bind(this);
-    this.flatMap = this.flatMap.bind(this);
-    this.pluck = this.pluck.bind(this);
-    this.pick = this.pick.bind(this);
-    this.omit = this.omit.bind(this);
-    this.select = this.select.bind(this);
-    this.sort = this.sort.bind(this);
-    this.sortBy = this.sortBy.bind(this);
-    this.groupBy = this.groupBy.bind(this);
-    this.reverse = this.reverse.bind(this);
+
+    const propertyNames = Object.getOwnPropertyNames(
+      Object.getPrototypeOf(this)
+    );
+
+    for (const name of propertyNames) {
+      const value = (this as any)[name];
+
+      if (name !== 'constructor' && typeof value === 'function') {
+        // @ts-expect-error
+        this[name] = value.bind(this);
+      }
+    }
   }
 
   public [Symbol.iterator](): Iterator<TRecord> {
