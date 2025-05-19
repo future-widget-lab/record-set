@@ -120,6 +120,14 @@ export type RecordSetApi<TRecord extends object> = {
   /**
    * @method
    * @description
+   * Use this helper to perform the specified action for each record in the record set.
+   */
+  forEach(
+    fn: (record: TRecord, index: number, array: Array<TRecord>) => void
+  ): void;
+  /**
+   * @method
+   * @description
    * Use this method to transform all records in the record set and return a new record set of the transformed records.
    */
   map: <TransformedRecord extends object>(

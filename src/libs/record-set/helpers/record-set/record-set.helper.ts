@@ -439,6 +439,26 @@ export class RecordSet<TRecord extends object>
   /**
    * @method
    * @description
+   * Use this helper to perform the specified action for each record in the record set.
+   *
+   * @param fn The function to execute on each element, receiving the record, the index, and the original array.
+   *
+   * @example
+   * const records = RecordSet.of([{ id: 1 }, { id: 2 }, { id: 3 }]);
+   *
+   * records.forEach((record, index) => {
+   *   console.log(record, index);
+   * });
+   */
+  public forEach(
+    fn: (record: TRecord, index: number, array: Array<TRecord>) => void
+  ): void {
+    this.records.forEach(fn);
+  }
+
+  /**
+   * @method
+   * @description
    * Use this method to transform all records in the record set and return a new RecordSet of the transformed records.
    *
    * @param fn The function will transform the record into a `TMappedRecord` shape.
