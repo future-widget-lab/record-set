@@ -575,6 +575,30 @@ export class RecordSet<TRecord extends object>
   /**
    * @method
    * @description
+   * Use this method to concatenate the current record set with another record set and returns a new combined record set.
+   *
+   * This method does not modify the original record sets but creates a new one containing all records of both.
+   *
+   * @param recordSet The other `RecordSet` to concatenate with.
+   *
+   * @returns A new `RecordSet<TRecord>` containing all records from both sets, in order.
+   *
+   * @example
+   * const set1 = RecordSet.of([{ id: 1 }, { id: 2 }]);
+   *
+   * const set2 = RecordSet.of([{ id: 3 }, { id: 4 }]);
+   *
+   * const combined = set1.concat(set2);
+   *
+   * console.log(combined.all()); // [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }]
+   */
+  public concat(recordSet: RecordSet<TRecord>): RecordSet<TRecord> {
+    return new RecordSet([...this.records, ...recordSet.all()]);
+  }
+
+  /**
+   * @method
+   * @description
    * Use this method to extract an array of a single field's values from all records in the record set.
    *
    * @param field The field that needs to be extracted from the records.
