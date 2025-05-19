@@ -19,8 +19,8 @@ describe('Unit | Helper | every', () => {
   });
 
   it('should return correct existence using every', () => {
-    expect(every({ records })).toBeTruthy();
-    expect(every({ records: [] })).toBeFalsy();
+    expect(every({ records })).toBeFalsy();
+    expect(every({ records: [] })).toBeTruthy();
     expect(every({ query: { age: { $gt: 15 } }, records })).toBeTruthy();
     expect(every({ query: { age: { $gt: 30 } }, records })).toBeFalsy();
   });

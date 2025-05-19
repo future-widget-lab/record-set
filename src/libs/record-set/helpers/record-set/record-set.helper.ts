@@ -27,6 +27,7 @@ import { sortBy } from '../sort-by/sort-by.helper';
 import { groupBy } from '../group-by/group-by.helper';
 import { reverse } from '../reverse/reverse.helper';
 import { every } from '../every/every.helper';
+import { none } from '../none/none.helper';
 
 export class RecordSet<TRecord> implements RecordSetApi<TRecord> {
   private readonly records: Array<TRecord>;
@@ -342,10 +343,30 @@ export class RecordSet<TRecord> implements RecordSetApi<TRecord> {
    * ]);
    *
    * const isEverythingAvailable = items.every({ available: true });
-   * console.log(hasBook); // true
+   * console.log(isEverythingAvailable); // true
    */
   public every(query?: SiftQuery<TRecord> | undefined) {
     return every({ query, records: this.records });
+  }
+
+  /**
+   * @method
+   * @description
+   * Use this method to check if every record matches the given query.
+   *
+   * @example
+   * type Item = { type: string; available: boolean };
+   *
+   * const items = RecordSet.of<Item>([
+   *   { type: 'book', available: false },
+   *   { type: 'food', available: false },
+   * ]);
+   *
+   * const noneAvailable = items.every({ available: true });
+   * console.log(noneAvailable); // true
+   */
+  public none(query?: SiftQuery<TRecord> | undefined) {
+    return none({ query, records: this.records });
   }
 
   /**

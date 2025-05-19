@@ -8,10 +8,10 @@ type EveryOptions<TRecord> = {
 
 /**
  * @description
- * Use this method to check if every record matches the given query.
+ * Use this method to check if none of the record matches the given query.
  */
-export const every = <TRecord>(options: EveryOptions<TRecord>): boolean => {
+export const none = <TRecord>(options: EveryOptions<TRecord>): boolean => {
   const { query, records } = options;
 
-  return records.every(sift(query));
+  return !records.some(sift(query));
 };

@@ -108,6 +108,12 @@ export type RecordSetApi<TRecord> = {
   /**
    * @method
    * @description
+   * Use this method to check if none of the record matches the given query.
+   */
+  none: (query?: SiftQuery<TRecord>) => boolean;
+  /**
+   * @method
+   * @description
    * Use this method to get distinct values of a field among records matching the query.
    */
   distinct: (field: keyof TRecord, query?: SiftQuery<TRecord>) => Array<any>;
