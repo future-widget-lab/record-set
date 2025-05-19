@@ -29,6 +29,7 @@ import { reverse } from '../reverse/reverse.helper';
 import { every } from '../every/every.helper';
 import { none } from '../none/none.helper';
 import { slice } from '../slice/slice.helper';
+import { findIndex } from '../find-index/find-index.helper';
 
 export class RecordSet<TRecord extends object>
   implements RecordSetApi<TRecord>
@@ -263,6 +264,29 @@ export class RecordSet<TRecord extends object>
    */
   public find(query?: SiftQuery<TRecord>): RecordSet<TRecord> {
     return RecordSet.of(find({ query, records: this.records }));
+  }
+
+  /**
+   * @method
+   * @description
+   * Use this helper to return the index of the first element in the array where predicate is true, and -1 otherwise.
+   *
+   * @param query The query that should be used to determine to match the records.
+   *
+   * @example
+   * type Person = { id: number; name: string; age: number };
+   *
+   * const people = RecordSet.of<Person>([
+   *   { id: 1, name: 'Alice', age: 30 },
+   *   { id: 2, name: 'Bob', age: 25 },
+   *   { id: 3, name: 'Eve', age: 35 },
+   * ]);
+   *
+   * const index = people.find({ name: 'Bob' });
+   * console.log(index); // 1
+   */
+  public findIndex(query: SiftQuery<TRecord>): number {
+    return findIndex({ query, records: this.records });
   }
 
   /**

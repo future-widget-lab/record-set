@@ -72,6 +72,12 @@ export type RecordSetApi<TRecord extends object> = {
   /**
    * @method
    * @description
+   * Use this helper to return the index of the first element in the array where predicate is true, and -1 otherwise.
+   */
+  findIndex: (query: SiftQuery<TRecord>) => number;
+  /**
+   * @method
+   * @description
    * Use this method to find all the matching records given a query.
    *
    * Fallsback to the the same set of items if no `query` is provided.
