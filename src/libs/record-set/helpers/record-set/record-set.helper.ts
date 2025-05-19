@@ -30,14 +30,18 @@ import { every } from '../every/every.helper';
 import { none } from '../none/none.helper';
 import { slice } from '../slice/slice.helper';
 
-export class RecordSet<TRecord> implements RecordSetApi<TRecord> {
+export class RecordSet<TRecord extends object>
+  implements RecordSetApi<TRecord>
+{
   private readonly records: Array<TRecord>;
 
-  static of<TRecord>(records?: Array<TRecord>): RecordSet<TRecord> {
+  static of<TRecord extends object>(
+    records?: Array<TRecord>
+  ): RecordSet<TRecord> {
     return new RecordSet(records);
   }
 
-  static empty<TRecord>(): RecordSet<TRecord> {
+  static empty<TRecord extends object>(): RecordSet<TRecord> {
     return new RecordSet<TRecord>();
   }
 
@@ -148,11 +152,11 @@ export class RecordSet<TRecord> implements RecordSetApi<TRecord> {
    * Use this method to skip the first `count` records.
    *
    * @example
-   * const records = RecordSet.of([1, 2, 3, 4, 5]);
+   * const records = RecordSet.of([{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }, { id: 5 }]);
    *
    * const skipped = records.skip(2);
    *
-   * console.log(skipped.all()); // [3, 4, 5]
+   * console.log(skipped.all()); // [{ id: 3 }, { id: 4 }, { id: 5 }]
    */
   public skip(count: number): RecordSet<TRecord> {
     return new RecordSet(skip({ count, records: this.records }));
@@ -164,10 +168,10 @@ export class RecordSet<TRecord> implements RecordSetApi<TRecord> {
    * Use this method to take at most `count` records from the start of the record set.
    *
    * @example
-   * const records = RecordSet.of([1, 2, 3, 4, 5]);
+   * const records = RecordSet.of([{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }, { id: 5 }]);
    *
    * const limited = records.limit(3);
-   * console.log(limited.all()); // [1, 2, 3]
+   * console.log(limited.all()); // [{ id: 1 }, { id: 2 }, { id: 3 }]
    */
   public limit(count: number): RecordSet<TRecord> {
     return new RecordSet(limit({ count, records: this.records }));
@@ -183,13 +187,24 @@ export class RecordSet<TRecord> implements RecordSetApi<TRecord> {
    * If either `pageNumber` or `pageSize` is less than 1, this method returns an empty RecordSet.
    *
    * @example
-   * const records = RecordSet.of([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+   * const records = RecordSet.of([
+   *   { id: 1 },
+   *   { id: 2 },
+   *   { id: 3 },
+   *   { id: 4 },
+   *   { id: 5 },
+   *   { id: 6 },
+   *   { id: 7 },
+   *   { id: 8 },
+   *   { id: 9 },
+   *   { id: 10 },
+   * ]);
    *
    * const firstPage = records.page(1, 3);
-   * console.log(firstPage.all()); // [1, 2, 3]
+   * console.log(firstPage.all()); // [{ id: 1 }, { id: 2 }, { id: 3 }]
    *
    * const secondPage = records.page(2, 3);
-   * console.log(secondPage.all()); // [4, 5, 6]
+   * console.log(secondPage.all()); // [{ id: 4 }, { id: 5 }, { id: 6 }]
    */
   public page(pageNumber: number, pageSize: number): RecordSet<TRecord> {
     return new RecordSet(page({ pageNumber, pageSize, records: this.records }));
@@ -201,7 +216,7 @@ export class RecordSet<TRecord> implements RecordSetApi<TRecord> {
    * Use this method to get the number of records in the record set.
    *
    * @example
-   * const record = RecordSet.of([1, 2, 3]);
+   * const record = RecordSet.of([{ id: 1 }, { id: 2 }, { id: 3 }]);
    *
    * record.length(); // 3
    */
@@ -417,7 +432,7 @@ export class RecordSet<TRecord> implements RecordSetApi<TRecord> {
    *
    * console.log(userNames.all()); // ['Alice', 'Bob']
    */
-  public map<TMappedRecord>(
+  public map<TMappedRecord extends object>(
     fn: (record: TRecord) => TMappedRecord
   ): RecordSet<TMappedRecord> {
     return new RecordSet(map({ transformer: fn, records: this.records }));
@@ -446,7 +461,7 @@ export class RecordSet<TRecord> implements RecordSetApi<TRecord> {
    *
    * comments.all(); // [{ id: 101, text: 'a' }, { id: 102, text: 'b' }, { id: 103, text: 'c' }]
    */
-  public flatMap<TMappedRecord>(
+  public flatMap<TMappedRecord extends object>(
     fn: (record: TRecord) => Array<TMappedRecord>
   ): RecordSet<TMappedRecord> {
     return new RecordSet(flatMap({ transformer: fn, records: this.records }));

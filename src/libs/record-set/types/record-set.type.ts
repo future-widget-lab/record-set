@@ -13,7 +13,7 @@ import { Options } from 'mingo/dist/types/core';
  *
  * The type is not intended for holding mutable state, every method is meant to create a new instance. That's also the same reason why there are no operations like `create` or `save`.
  */
-export type RecordSetApi<TRecord> = {
+export type RecordSetApi<TRecord extends object> = {
   /**
    * @method
    * @description
@@ -122,7 +122,7 @@ export type RecordSetApi<TRecord> = {
    * @description
    * Use this method to transform all records in the record set and return a new record set of the transformed records.
    */
-  map: <TransformedRecord>(
+  map: <TransformedRecord extends object>(
     fn: (item: TRecord) => TransformedRecord
   ) => RecordSetApi<TransformedRecord>;
   /**
@@ -132,7 +132,7 @@ export type RecordSetApi<TRecord> = {
    *
    * This is handy for extracting nested arrays or expanding items.
    */
-  flatMap: <TMappedRecord>(
+  flatMap: <TMappedRecord extends object>(
     fn: (record: TRecord) => Array<TMappedRecord>
   ) => RecordSetApi<TMappedRecord>;
   /**
