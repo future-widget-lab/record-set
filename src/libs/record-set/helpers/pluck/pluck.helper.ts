@@ -1,5 +1,5 @@
 type PluckOptions<TRecord, TKey extends keyof TRecord> = {
-  key: TKey;
+  field: TKey;
   records: Array<TRecord>;
 };
 
@@ -10,12 +10,12 @@ type PluckOptions<TRecord, TKey extends keyof TRecord> = {
 export const pluck = <TRecord, TKey extends keyof TRecord>(
   options: PluckOptions<TRecord, TKey>
 ): Array<TRecord[TKey]> => {
-  const { key, records } = options;
+  const { field, records } = options;
 
   const plucked: Array<TRecord[TKey]> = [];
 
   for (const record of records) {
-    plucked.push(record[key]);
+    plucked.push(record[field]);
   }
 
   return plucked;

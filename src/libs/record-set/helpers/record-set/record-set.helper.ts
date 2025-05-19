@@ -103,6 +103,8 @@ export class RecordSet<TRecord extends object>
    * @description
    * Use this method to retrieve the record at the specified index, or null if out of bounds.
    *
+   * @param index The zero-based index of the desired code unit. A negative index will count back from the last item.
+   *
    * @example
    * const record = RecordSet.of([{ id: 1 }, { id: 2 }]);
    *
@@ -151,6 +153,8 @@ export class RecordSet<TRecord extends object>
    * @description
    * Use this method to skip the first `count` records.
    *
+   * @param count The number of records that should be skipped.
+   *
    * @example
    * const records = RecordSet.of([{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }, { id: 5 }]);
    *
@@ -166,6 +170,8 @@ export class RecordSet<TRecord extends object>
    * @method
    * @description
    * Use this method to take at most `count` records from the start of the record set.
+   *
+   * @param count The max. number of records the record set should hold.
    *
    * @example
    * const records = RecordSet.of([{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }, { id: 5 }]);
@@ -185,6 +191,9 @@ export class RecordSet<TRecord extends object>
    * This method calculates the starting index by `(pageNumber - 1) * pageSize`, then skips that many records, and finally limits the result to `pageSize` number of records.
    *
    * If either `pageNumber` or `pageSize` is less than 1, this method returns an empty RecordSet.
+   *
+   * @param pageNumber The page number to retrieve, starting at 1.
+   * @param pageSize The number of records per page.
    *
    * @example
    * const records = RecordSet.of([
@@ -245,6 +254,8 @@ export class RecordSet<TRecord extends object>
    *
    * Falls back to the same set of records if no `query` is provided.
    *
+   * @param query The query that should be used to determine to match the records.
+   *
    * @example
    * type Person = { id: number; name: string; age: number };
    *
@@ -275,6 +286,8 @@ export class RecordSet<TRecord extends object>
    *
    * Fallbacks to `null` if the query provided does not return any matches.
    *
+   * @param query The query that should be used to determine to match the record.
+   *
    * @example
    * type Person = { id: number; name: string; age: number };
    *
@@ -301,6 +314,8 @@ export class RecordSet<TRecord extends object>
    * @description
    * Use this method to count the number of records matching the query.
    *
+   * @param query The query that should be used to determine to match the records.
+   *
    * @example
    * type Item = { category: string; value: number };
    *
@@ -324,6 +339,8 @@ export class RecordSet<TRecord extends object>
    * @method
    * @description
    * Use this method to check if any record exists matching the query.
+   *
+   * @param query The query that should be used to determine to match the records.
    *
    * @example
    * type Item = { type: string; available: boolean };
@@ -350,6 +367,8 @@ export class RecordSet<TRecord extends object>
    * @description
    * Use this method to check if every record matches the given query.
    *
+   * @param query The query that should be used to determine to match the records.
+   *
    * @example
    * type Item = { type: string; available: boolean };
    *
@@ -370,6 +389,8 @@ export class RecordSet<TRecord extends object>
    * @description
    * Use this method to check if every record matches the given query.
    *
+   * @param query The query that should be used to determine to match the records.
+   *
    * @example
    * type Item = { type: string; available: boolean };
    *
@@ -389,6 +410,9 @@ export class RecordSet<TRecord extends object>
    * @method
    * @description
    * Use this method to get distinct values of a field among records matching the query.
+   *
+   * @param field The field that needs to be inspected.
+   * @param query The query that should be used to determine to match the records.
    *
    * @example
    * type Product = { category: string; name: string };
@@ -417,6 +441,8 @@ export class RecordSet<TRecord extends object>
    * @description
    * Use this method to transform all records in the record set and return a new RecordSet of the transformed records.
    *
+   * @param fn The function will transform the record into a `TMappedRecord` shape.
+   *
    * @example
    * type User = { id: number; name: string; age: number };
    *
@@ -444,6 +470,8 @@ export class RecordSet<TRecord extends object>
    * Use this method to map each record to zero or more records, then flatten the results into a single new RecordSet.
    *
    * This is handy for extracting nested arrays or expanding items.
+   *
+   * @param fn The function will transform the array of records into a `TMappedRecord` shape.
    *
    * @example
    * type Comment = { id: number; text: string };
@@ -476,6 +504,11 @@ export class RecordSet<TRecord extends object>
    *
    * For filtering, use `.find()` prior to `.slice()`.
    *
+   * @param start The beginning index of the specified portion of the array.
+   * If start is undefined, then the slice begins at index 0.
+   * @param end The end index of the specified portion of the array. This is exclusive of the element at the index 'end'.
+   * If end is undefined, then the slice extends to the end of the array.
+   *
    * @example
    * const records = RecordSet.of([1, 2, 3, 4, 5]);
    *
@@ -493,6 +526,9 @@ export class RecordSet<TRecord extends object>
    * @method
    * @description
    * Use this method to reduce the record set to a single accumulated value.
+   *
+   * @param fn The function that accepts up to four arguments. The reduce method calls the callbackfn function one time for each element in the array.
+   * @param initialValue The initial value to start the accumulation. The first call to the callbackfn function provides this value as an argument instead of an array value.
    *
    * @example
    * type Person = { name: string; age: number };
@@ -521,6 +557,8 @@ export class RecordSet<TRecord extends object>
    * @description
    * Use this method to extract an array of a single field's values from all records in the record set.
    *
+   * @param field The field that needs to be extracted from the records.
+   *
    * @example
    * type Person = { id: number; name: string; age: number };
    *
@@ -534,14 +572,16 @@ export class RecordSet<TRecord extends object>
    *
    * console.log(ages); // [30, 25, 35]
    */
-  public pluck<TKey extends keyof TRecord>(key: TKey): Array<TRecord[TKey]> {
-    return pluck({ key, records: this.records });
+  public pluck<TKey extends keyof TRecord>(field: TKey): Array<TRecord[TKey]> {
+    return pluck({ field, records: this.records });
   }
 
   /**
    * @method
    * @description
    * Use this method to pick only the specified fields from each record, returning a new RecordSet of records with only those keys.
+   *
+   * @param fields The array of fields that need to be extracted to create the new shape.
    *
    * @example
    * type User = { id: number; name: string; age: number; email: string };
@@ -566,6 +606,8 @@ export class RecordSet<TRecord extends object>
    * @method
    * @description
    * Use this method to omit the specified fields from each record, returning a new record set of records without those keys.
+   *
+   * @param omit The fields that need to be ommited to create the new shape.
    *
    * @example
    * type User = { id: number; name: string; age: number; password: string };
@@ -595,6 +637,8 @@ export class RecordSet<TRecord extends object>
    * - Array of strings: `['a', '-b']`.
    * - Object notation: `{ a: 1, b: 1 }` or `{ c: 0 }`.
    *
+   * @param spec The specifications of which fields need to be picked or omitted.
+   *
    * Inclusive if any field is positively specified (no `-` or `0`).
    *
    * Exclusive if only negatives (`-`) or zeros (`0`).
@@ -616,6 +660,8 @@ export class RecordSet<TRecord extends object>
    * @method
    * @description
    * Use this method to sort the records with the provided compare function.
+   *
+   * @param sort The function used to determine the order of the elements. It is expected to return a negative value if the first argument is less than the second argument, zero if they're equal, and a positive value otherwise.
    *
    * @example
    * type Product = { name: string; price: number };
@@ -643,6 +689,9 @@ export class RecordSet<TRecord extends object>
    * @method
    * @description
    * Use this method to sort the records by key(s) using lodash orderBy.
+   *
+   * @param iteratees One or more keys to sort by.
+   * @param orders Order(s) for each key; can be a single 'asc' | 'desc' or an array corresponding to iteratees.
    *
    * @example
    * type Product = { category: string; price: number };
@@ -681,6 +730,8 @@ export class RecordSet<TRecord extends object>
    * @method
    * @description
    * Use this method to group records by a key derived from each record.
+   *
+   * @fn The function that will serve as the key extractor. This function will be used to generate the keys in the resulting map.
    *
    * It returns a `Map` where keys are group keys and values are record sets of grouped records.
    * @example
@@ -749,6 +800,9 @@ export class RecordSet<TRecord extends object>
    * This method returns a `mingo` [Cursor](https://www.npmjs.com/package/mingo), which allows you to further refine and chain query operations as needed.
    *
    * Note: Queries are lazily evaluated. Meaning that only when `.all()`, `.next()`, or similar methods are invoked the operations are ran.
+   *
+   * @param condition The query condition object used to define the criteria for matching documents.
+   * @param options Optional configuration settings to customize the query behavior.
    */
   public query(
     condition: AnyObject,

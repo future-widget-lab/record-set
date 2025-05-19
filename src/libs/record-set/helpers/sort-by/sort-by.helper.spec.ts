@@ -21,7 +21,7 @@ describe('Unit | Helper | sortBy', () => {
 
   it('should sort ascending by a single key (string)', () => {
     const actual = pluck({
-      key: 'age',
+      field: 'age',
       records: sortBy({ iteratees: 'age', records }),
     });
 
@@ -30,7 +30,7 @@ describe('Unit | Helper | sortBy', () => {
 
   it('should sort descending by a single key (string)', () => {
     const actual = pluck({
-      key: 'age',
+      field: 'age',
       records: sortBy({ iteratees: 'age', orders: 'desc', records }),
     });
 

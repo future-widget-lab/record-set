@@ -21,7 +21,7 @@ describe('Unit | Helper | pluck', () => {
   it('should extract field values correctly using pluck', () => {
     const expected = [30, 25, 35, 40];
 
-    const actual = pluck({ key: 'age', records });
+    const actual = pluck({ field: 'age', records });
 
     expect(actual).toEqual(expected);
   });

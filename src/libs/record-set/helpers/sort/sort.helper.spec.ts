@@ -23,7 +23,7 @@ describe('Unit | Helper | sort', () => {
     const expected = [25, 30, 35, 40];
 
     const actual = pluck({
-      key: 'age',
+      field: 'age',
       records: sort({
         compareFn: (a, b) => {
           return a.age - b.age;

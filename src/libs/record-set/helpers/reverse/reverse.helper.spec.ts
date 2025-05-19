@@ -23,7 +23,7 @@ describe('Unit | Helper | reverse', () => {
     const expected = [4, 3, 2, 1];
 
     const actual = pluck({
-      key: 'id',
+      field: 'id',
       records: reverse({ records }),
     });
 
