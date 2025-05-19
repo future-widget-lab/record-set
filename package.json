@@ -1,6 +1,6 @@
 {
   "name": "@future-widget-lab/record-set",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A dedicated data structure for in-memory record collections, offering fluent, immutable APIs for MongoDB-like querying, sorting, and transformation.",
   "license": "MIT",
   "author": "Carlos Lobo",

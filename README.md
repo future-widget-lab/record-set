@@ -33,7 +33,7 @@ Install with npm:
 npm install @future-widget-lab/record-set
 ```
 
-> **Note**: `sift` and `mingo` are user underneath and _should_ be installed alongside if you wish to leverage their types.
+> **Note**: `sift` and `mingo` are used underneath and _should_ be installed alongside if you wish to leverage their types.
 
 ## Usage
 
