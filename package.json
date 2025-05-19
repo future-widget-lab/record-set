@@ -64,5 +64,28 @@
   "dependencies": {
     "mingo": "^6.6.1",
     "sift": "^17.1.3"
-  }
+  },
+  "keywords": [
+    "data-structure",
+    "recordset",
+    "in-memory",
+    "collection",
+    "immutable",
+    "fluent",
+    "query",
+    "querying",
+    "filter",
+    "filtering",
+    "sorting",
+    "transformation",
+    "mongodb",
+    "mongodb-like",
+    "mongo-syntax",
+    "functional",
+    "typescript",
+    "frontend",
+    "client-side",
+    "state-management",
+    "dataset"
+  ]
 }
