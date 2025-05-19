@@ -29,7 +29,7 @@ describe('Unit | Helper | update', () => {
     const actual = update({
       records,
       query: {
-        name: {$regex: /Bob/i},
+        name: { $regex: /Bob/i },
       },
       changes: {
         age: 31,

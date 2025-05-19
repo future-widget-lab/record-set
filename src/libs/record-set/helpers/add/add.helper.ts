@@ -1,6 +1,3 @@
-import sift from 'sift';
-import type { Query } from 'sift';
-
 type AddOptions<TRecord> = {
   newRecords: TRecord | Array<TRecord>;
   index?: number;
