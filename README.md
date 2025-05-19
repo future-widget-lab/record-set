@@ -1,6 +1,6 @@
 # @future-widget-lab/record-set
 
-A fluent, immutable data structure for filtering, sorting, and transforming in-memory record collections using MongoDB-like syntax.
+A dedicated data structure for in-memory record collections, offering fluent, immutable APIs for MongoDB-like querying, sorting, and transformation.
 
 ## Features
 
